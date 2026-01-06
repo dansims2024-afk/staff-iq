@@ -1,12 +1,270 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Staff-IQ | Intelligent Hiring</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff-IQ Dashboard</title>
+    <style>
+        /* --- GLOBAL STYLES --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            display: flex; /* Creates the side-by-side layout */
+            height: 100vh; /* Full viewport height */
+        }
+
+        /* --- SIDEBAR STYLES --- */
+        .sidebar {
+            width: 250px;
+            background-color: #f8f9fa; /* Light grey background */
+            padding: 20px;
+            border-right: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0; /* Prevents sidebar from shrinking */
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 40px;
+            padding-left: 10px;
+            color: #000;
+        }
+
+        .sidebar ul {
+            list-style-type: none; /* REMOVES BULLETS */
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar li a {
+            display: block;
+            padding: 12px 15px;
+            text-decoration: none;
+            color: #333;
+            border-radius: 6px;
+            margin-bottom: 5px;
+            transition: background-color 0.2s;
+        }
+
+        /* Hover effect for links */
+        .sidebar li a:hover, .sidebar li a.active {
+            background-color: #e9ecef;
+            color: #000;
+            font-weight: 500;
+        }
+
+        /* --- MAIN CONTENT AREA --- */
+        .main-content {
+            flex-grow: 1;
+            padding: 40px;
+            overflow-y: auto; /* Allows scrolling if list is long */
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 0.95rem;
+        }
+
+        /* --- SEARCH BAR --- */
+        .search-container {
+            margin-bottom: 40px;
+            display: flex;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 300px;
+        }
+
+        .btn-add {
+            padding: 8px 16px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* --- PIPELINE SECTIONS --- */
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        /* --- CANDIDATE CARD STYLES --- */
+        .candidate-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            
+            /* THIS ALIGNS CONTENT LEFT AND RIGHT */
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+        }
+
+        /* Left side of card: Avatar + Info */
+        .card-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background-color: #EEF2FF; /* Light purple/blue bg */
+            color: #6366F1; /* Purple text */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .iq-badge {
+            background-color: #F0FDF4; /* Light green bg */
+            color: #16A34A; /* Green text */
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .candidate-info h3 {
+            margin: 0 0 4px 0;
+            font-size: 1rem;
+        }
+
+        .candidate-info p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Right side of card: Buttons */
+        .card-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-hire {
+            padding: 6px 12px;
+            background-color: white;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #374151;
+        }
+
+        .btn-hire:hover {
+            background-color: #f9fafb;
+        }
+
+        .menu-dots {
+            color: #9ca3af;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0 5px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="logo">IQ</div>
+        <ul>
+            <li><a href="#" class="active">Staff-IQ</a></li>
+            <li><a href="#">Dashboard</a></li>
+            <li><a href="#">Candidates</a></li>
+            <li><a href="#">Job Posts</a></li>
+            <li><a href="#">Settings</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <h1>Active Pipeline</h1>
+        <p class="subtitle">Ranking by Staff-IQ Smart Score</p>
+
+        <div class="search-container">
+            <input type="text" placeholder="Search talent...">
+            <button class="btn-add">+ Add Candidate</button>
+        </div>
+
+        <div class="section-title">New Leads 1</div>
+        
+        <div class="candidate-card">
+            <div class="card-left">
+                <div class="avatar">MT</div>
+                <div class="iq-badge">72 IQ</div>
+                <div class="candidate-info">
+                    <h3>Marcus Todd</h3>
+                    <p>Operations</p>
+                </div>
+            </div>
+            <div class="card-right">
+                <button class="btn-hire">Hire</button>
+                <div class="menu-dots">⋮</div>
+            </div>
+        </div>
+
+        <div class="section-title">In Review 1</div>
+
+        <div class="candidate-card">
+            <div class="card-left">
+                <div class="avatar">AR</div>
+                <div class="iq-badge">89 IQ</div>
+                <div class="candidate-info">
+                    <h3>Alex Rivera</h3>
+                    <p>Store Manager</p>
+                </div>
+            </div>
+            <div class="card-right">
+                <button class="btn-hire">Hire</button>
+                <div class="menu-dots">⋮</div>
+            </div>
+        </div>
+
+        <div class="section-title">Interviewing 1</div>
+
+        <div class="candidate-card">
+            <div class="card-left">
+                <div class="avatar">SC</div>
+                <div class="iq-badge">87 IQ</div>
+                <div class="candidate-info">
+                    <h3>Sarah Chen</h3>
+                    <p>Sales Lead</p>
+                </div>
+            </div>
+            <div class="card-right">
+                <button class="btn-hire">Hire</button>
+                <div class="menu-dots">⋮</div>
+            </div>
+        </div>
+
+    </main>
+
+</body>
 </html>
