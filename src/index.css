@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .staff-card {
+    @apply bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-indigo-400 transition-all;
+  }
+  .staff-btn-primary {
+    @apply bg-indigo-600 text-white px-6 py-2.5 rounded-md font-bold hover:bg-indigo-700 transition-all active:scale-95;
+  }
+  .staff-btn-success {
+    @apply bg-emerald-600 text-white px-6 py-2.5 rounded-md font-bold hover:bg-emerald-700 transition-all active:scale-95;
+  }
+}
