@@ -45,7 +45,7 @@
         .card-left { display: flex; align-items: center; gap: 20px; }
         .score-circle {
             width: 54px; height: 54px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            border: 4px solid #e5e7eb; font-weight: 800; font-size: 1.2rem; position: relative;
+            border: 4px solid #e5e7eb; font-weight: 800; font-size: 1.2rem; position: relative; transition: all 0.5s ease;
         }
         .score-circle.high { border-color: var(--success); color: #059669; background: #ecfdf5; }
         .score-circle.med { border-color: #f59e0b; color: #d97706; background: #fffbeb; }
@@ -68,7 +68,8 @@
         .slider-group { margin-bottom: 25px; }
         .slider-label { display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: 600; }
         .slider-track { -webkit-appearance: none; width: 100%; height: 8px; border-radius: 4px; background: #e5e7eb; outline: none; }
-        .slider-track::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--primary); cursor: pointer; }
+        .slider-track::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--primary); cursor: pointer; transition: transform 0.1s; }
+        .slider-track::-webkit-slider-thumb:hover { transform: scale(1.2); }
 
         /* --- FEATURE 3: BENCHMARKING --- */
         .benchmark-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
@@ -89,6 +90,8 @@
         
         .dimmer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); z-index: 1500; }
         .dimmer.active { display: block; }
+        .loader-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index: 3000; align-items: center; justify-content: center; flex-direction: column; }
+        .loader-overlay.active { display: flex; }
 
         /* --- FEATURE 2: INTERVIEW GUIDE --- */
         .interview-guide { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 20px; margin-top: 30px; }
@@ -111,6 +114,11 @@
         </div>
     </nav>
 
+    <div class="loader-overlay" id="loader">
+        <div style="font-size: 2rem; margin-bottom: 10px;">🧠</div>
+        <div style="font-weight: bold; color: var(--primary);">AI Recalculating Pipeline...</div>
+    </div>
+
     <main class="main-content">
 
         <div id="dashboard-view" class="view-section active-view">
@@ -121,31 +129,31 @@
 
             <div class="candidate-card">
                 <div class="card-left">
-                    <div class="score-circle high">89<span class="score-label">IQ</span></div>
+                    <div class="score-circle high" id="score-c1-ui">89<span class="score-label">IQ</span></div>
                     <div class="info">
                         <h3>Alex Rivera</h3>
                         <p>Senior Store Manager • Applied 2h ago</p>
                     </div>
                 </div>
                 <div class="action-group">
-                    <button class="btn btn-outline btn-icon" onclick="alert('Opening SMS Console for Alex...')">💬</button>
-                    <button class="btn btn-outline btn-icon" onclick="alert('Opening Email Composer for Alex...')">✉️</button>
-                    <button class="btn btn-primary" onclick="openProfile('Alex Rivera', 89)">View Profile</button>
+                    <button class="btn btn-outline btn-icon" onclick="alert('Opening SMS Console...')">💬</button>
+                    <button class="btn btn-outline btn-icon" onclick="alert('Opening Email Composer...')">✉️</button>
+                    <button class="btn btn-primary" onclick="openProfile('Alex Rivera', document.getElementById('score-c1-ui').firstChild.textContent)">View Profile</button>
                 </div>
             </div>
 
             <div class="candidate-card">
                 <div class="card-left">
-                    <div class="score-circle high">87<span class="score-label">IQ</span></div>
+                    <div class="score-circle high" id="score-c2-ui">87<span class="score-label">IQ</span></div>
                     <div class="info">
                         <h3>Sarah Chen</h3>
                         <p>Sales Lead • Applied 5h ago</p>
                     </div>
                 </div>
                 <div class="action-group">
-                    <button class="btn btn-outline btn-icon" onclick="alert('Opening SMS Console for Sarah...')">💬</button>
-                    <button class="btn btn-outline btn-icon" onclick="alert('Opening Email Composer for Sarah...')">✉️</button>
-                    <button class="btn btn-primary" onclick="openProfile('Sarah Chen', 87)">View Profile</button>
+                    <button class="btn btn-outline btn-icon" onclick="alert('Opening SMS Console...')">💬</button>
+                    <button class="btn btn-outline btn-icon" onclick="alert('Opening Email Composer...')">✉️</button>
+                    <button class="btn btn-primary" onclick="openProfile('Sarah Chen', document.getElementById('score-c2-ui').firstChild.textContent)">View Profile</button>
                 </div>
             </div>
 
@@ -153,16 +161,16 @@
 
              <div class="candidate-card">
                 <div class="card-left">
-                    <div class="score-circle med">72<span class="score-label">IQ</span></div>
+                    <div class="score-circle med" id="score-c3-ui">72<span class="score-label">IQ</span></div>
                     <div class="info">
                         <h3>Marcus Todd</h3>
                         <p>Operations • Applied 1d ago</p>
                     </div>
                 </div>
                 <div class="action-group">
-                    <button class="btn btn-outline btn-icon" onclick="alert('Opening SMS Console for Marcus...')">💬</button>
-                    <button class="btn btn-outline btn-icon" onclick="alert('Opening Email Composer for Marcus...')">✉️</button>
-                    <button class="btn btn-primary" onclick="openProfile('Marcus Todd', 72)">View Profile</button>
+                    <button class="btn btn-outline btn-icon" onclick="alert('Opening SMS Console...')">💬</button>
+                    <button class="btn btn-outline btn-icon" onclick="alert('Opening Email Composer...')">✉️</button>
+                    <button class="btn btn-primary" onclick="openProfile('Marcus Todd', document.getElementById('score-c3-ui').firstChild.textContent)">View Profile</button>
                 </div>
             </div>
         </div>
@@ -209,24 +217,24 @@
 
             <div class="settings-card">
                 <div class="slider-group">
-                    <div class="slider-label"><span>Financial Literacy</span> <span>40%</span></div>
-                    <input type="range" class="slider-track" value="40">
+                    <div class="slider-label"><span>Financial Literacy</span> <span id="val-1">40%</span></div>
+                    <input type="range" class="slider-track" value="40" min="0" max="100" oninput="updateSlider('val-1', this.value)">
                     <p style="font-size:0.8rem; color:#666; margin-top:5px;">Importance of P&L, Inventory, Math skills.</p>
                 </div>
 
                 <div class="slider-group">
-                    <div class="slider-label"><span>Leadership & Management</span> <span>35%</span></div>
-                    <input type="range" class="slider-track" value="35">
+                    <div class="slider-label"><span>Leadership & Management</span> <span id="val-2">35%</span></div>
+                    <input type="range" class="slider-track" value="35" min="0" max="100" oninput="updateSlider('val-2', this.value)">
                     <p style="font-size:0.8rem; color:#666; margin-top:5px;">Importance of Team Size, Training, Retention.</p>
                 </div>
 
                 <div class="slider-group">
-                    <div class="slider-label"><span>Operations & Logistics</span> <span>25%</span></div>
-                    <input type="range" class="slider-track" value="25">
+                    <div class="slider-label"><span>Operations & Logistics</span> <span id="val-3">25%</span></div>
+                    <input type="range" class="slider-track" value="25" min="0" max="100" oninput="updateSlider('val-3', this.value)">
                     <p style="font-size:0.8rem; color:#666; margin-top:5px;">Importance of Scheduling, Merchandising, Safety.</p>
                 </div>
 
-                <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="alert('AI Scoring Weights Updated! Recalculating pipeline...')">Save & Recalculate Scores</button>
+                <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="recalculateScores()">Save & Recalculate Scores</button>
             </div>
         </div>
 
@@ -268,30 +276,57 @@
     <script>
         // Navigation Logic
         function switchView(viewName) {
-            // Hide all views
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-view'));
-            // Remove active class from nav items
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-
-            // Show selected view
             document.getElementById(viewName + '-view').classList.add('active-view');
             
-            // Highlight nav item (simple loop matching)
             const navs = document.querySelectorAll('.nav-item');
             if(viewName === 'dashboard') navs[0].classList.add('active');
             if(viewName === 'benchmark') navs[1].classList.add('active');
             if(viewName === 'settings') navs[2].classList.add('active');
         }
 
+        // Feature 1: Live Slider Updates
+        function updateSlider(id, val) {
+            document.getElementById(id).innerText = val + "%";
+        }
+
+        // Feature: Recalculate Scores Simulation
+        function recalculateScores() {
+            // Show Loader
+            const loader = document.getElementById('loader');
+            loader.classList.add('active');
+
+            // Simulate AI Processing time (1.5 seconds)
+            setTimeout(() => {
+                loader.classList.remove('active');
+                
+                // Randomly change scores to simulate AI logic
+                const newScore1 = Math.floor(Math.random() * (95 - 85 + 1) + 85);
+                const newScore2 = Math.floor(Math.random() * (88 - 80 + 1) + 80);
+                const newScore3 = Math.floor(Math.random() * (79 - 65 + 1) + 65);
+
+                // Update UI
+                document.getElementById('score-c1-ui').innerHTML = newScore1 + '<span class="score-label">IQ</span>';
+                document.getElementById('score-c2-ui').innerHTML = newScore2 + '<span class="score-label">IQ</span>';
+                document.getElementById('score-c3-ui').innerHTML = newScore3 + '<span class="score-label">IQ</span>';
+
+                // Switch back to dashboard to see results
+                switchView('dashboard');
+
+            }, 1500);
+        }
+
         // Profile Panel Logic
         function openProfile(name, score) {
+            // Remove 'IQ' from string if passed in
+            let cleanScore = parseInt(score); 
             document.getElementById('p-name').innerText = name;
-            document.getElementById('p-score').innerText = score;
+            document.getElementById('p-score').innerText = cleanScore;
             
-            // Color logic for score
             const scoreEl = document.getElementById('p-score');
-            if(score >= 80) scoreEl.style.color = '#10b981'; // Green
-            else scoreEl.style.color = '#f59e0b'; // Orange
+            if(cleanScore >= 80) scoreEl.style.color = '#10b981';
+            else scoreEl.style.color = '#f59e0b';
 
             document.getElementById('profilePanel').classList.add('open');
             document.getElementById('dimmer').classList.add('active');
