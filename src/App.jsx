@@ -1,120 +1,41 @@
 import React, { useState } from 'react';
-// We use the direct import which will be resolved by the importmap in your HTML
-import { GoogleGenerativeAI } from "@google/generative-ai"; 
 import { 
   LayoutDashboard, PlusSquare, Users, BarChart3, Settings, Sparkles, Loader2 
 } from 'lucide-react';
 
-// --- CONFIGURATION ---
-const API_KEY = "YOUR_API_KEY_HERE"; 
-const genAI = new GoogleGenerativeAI(API_KEY);
-
-// --- SUB-COMPONENTS ---
-const DashboardView = () => (
-  <div className="p-8">
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-      {[
-        { label: 'Active Jobs', val: '12', color: 'text-indigo-600' },
-        { label: 'Total Applicants', val: '458', color: 'text-emerald-600' },
-        { label: 'Interviews Today', val: '5', color: 'text-amber-600' }
-      ].map((stat, i) => (
-        <div key={i} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-          <p className="text-slate-500 text-sm font-medium">{stat.label}</p>
-          <p className={`text-3xl font-bold ${stat.color}`}>{stat.val}</p>
-        </div>
-      ))}
-    </div>
-    <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm h-64 flex items-center justify-center">
-      <p className="text-slate-400 italic text-sm text-center">
-        Candidate Pipeline & Analytics Chart <br/> (Dashboard is now Active)
-      </p>
-    </div>
-  </div>
-);
-
-const PostJobView = () => {
+// --- MAIN APPLICATION ---
+export default function App() {
+  const [activeTab, setActiveTab] = useState('Post a Job');
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
 
+  // --- AI GENERATION LOGIC ---
   const generateDescription = async () => {
     if (!title) return alert("Please enter a Job Title first!");
-    if (API_KEY === "YOUR_API_KEY_HERE") return alert("Please add your Gemini API Key at the top of the code!");
     
+    // Checks if the script we added to index.html is loaded
+    if (!window.google) {
+      return alert("AI Library is still loading or missing from index.html. Please check your script tag.");
+    }
+
     setIsGenerating(true);
     try {
+      // Accessing the global library loaded via CDN
+      const genAI = new window.google.generativeAi.GoogleGenerativeAI("YOUR_API_KEY_HERE");
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      
       const prompt = `Write a professional 3-paragraph job description for a ${title}.`;
       const result = await model.generateContent(prompt);
-      setDescription(result.response.text());
+      const response = await result.response;
+      setDescription(response.text());
     } catch (error) {
       console.error("Gemini Error:", error);
-      alert("AI Connection Failed. Ensure your API key is valid.");
+      alert("AI failed to respond. Make sure you have a valid API Key.");
     } finally {
       setIsGenerating(false);
     }
   };
-
-  return (
-    <div className="flex flex-col lg:flex-row gap-8 p-8">
-      <div className="flex-1 bg-white p-8 rounded-3xl shadow-xl border border-slate-100">
-        <div className="flex gap-4 mb-8">
-          <div className="flex-1">
-            <label className="text-[10px] uppercase font-bold text-slate-400 ml-2 mb-1 block">Job Title</label>
-            <input 
-              value={title} 
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full p-4 bg-slate-50 rounded-xl border-none focus:ring-2 focus:ring-indigo-500" 
-              placeholder="e.g. Senior Product Designer"
-            />
-          </div>
-          <div className="w-32">
-            <label className="text-[10px] uppercase font-bold text-slate-400 ml-2 mb-1 block">Salary</label>
-            <input defaultValue="55000" className="w-full p-4 bg-slate-50 rounded-xl border-none font-mono text-center" />
-          </div>
-        </div>
-
-        <div className="mb-4 flex justify-between items-center">
-          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Description</label>
-          <button 
-            onClick={generateDescription}
-            disabled={isGenerating}
-            className="flex items-center gap-2 text-indigo-600 font-bold text-sm hover:text-indigo-800"
-          >
-            {isGenerating ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
-            Generate with Gemini
-          </button>
-        </div>
-        
-        <textarea 
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Enter a title and click 'Generate'..." 
-          className="w-full h-80 p-6 bg-slate-50 rounded-2xl border-none mb-6 resize-none focus:ring-2 focus:ring-indigo-500 leading-relaxed"
-        />
-
-        <button className="w-full py-5 bg-[#0F172A] text-white rounded-2xl font-black text-lg flex items-center justify-center gap-3 hover:bg-indigo-600 transition-all">
-          Publish Requisition 🚀
-        </button>
-      </div>
-      
-      <div className="w-full lg:w-80">
-        <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Market Health</p>
-          <h3 className={`text-2xl font-bold ${title ? 'text-slate-900' : 'text-slate-200'}`}>
-            {title || "Awaiting Title"}
-          </h3>
-          <p className="text-slate-400 text-sm italic mt-2">
-            {title ? "Analyzing market trends..." : '"Enter a role to analyze market data."'}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default function App() {
-  const [activeTab, setActiveTab] = useState('Post a Job');
 
   const menuItems = [
     { id: 'Dashboard', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
@@ -126,15 +47,22 @@ export default function App() {
 
   return (
     <div className="flex min-h-screen bg-slate-50 text-slate-900 font-sans">
-      <div className="w-64 bg-[#0F172A] text-white flex flex-col p-6 fixed h-full border-r border-slate-800">
-        <h1 className="text-xl font-black italic tracking-tighter uppercase mb-12">Staff IQ</h1>
+      {/* SIDEBAR */}
+      <aside className="w-64 bg-[#0F172A] text-white flex flex-col p-6 fixed h-full shadow-2xl">
+        <div className="flex items-center gap-2 mb-12">
+          <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center font-bold italic">S</div>
+          <h1 className="text-xl font-black italic tracking-tighter uppercase">Staff IQ</h1>
+        </div>
+        
         <nav className="flex-1 space-y-1">
           {menuItems.map((item) => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
-                activeTab === item.id ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                activeTab === item.id 
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' 
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800'
               }`}
             >
               {item.icon}
@@ -142,20 +70,93 @@ export default function App() {
             </button>
           ))}
         </nav>
-      </div>
+      </aside>
 
-      <div className="flex-1 ml-64 min-h-screen">
-        <header className="px-8 pt-8 pb-4 sticky top-0 bg-slate-50/80 backdrop-blur-md">
+      {/* MAIN CONTENT */}
+      <main className="flex-1 ml-64 min-h-screen">
+        <header className="px-8 pt-8 pb-4 sticky top-0 bg-slate-50/90 backdrop-blur-md z-10">
           <h2 className="text-3xl font-black italic tracking-tight">{activeTab}</h2>
         </header>
-        <main className="max-w-6xl">
-          {activeTab === 'Dashboard' && <DashboardView />}
-          {activeTab === 'Post a Job' && <PostJobView />}
-          {['Candidates', 'Analytics', 'Settings'].includes(activeTab) && (
-            <div className="p-8 text-slate-400 italic font-medium">Coming Soon: Deep Candidate Analytics</div>
+
+        <section className="max-w-6xl p-8">
+          {activeTab === 'Dashboard' && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in duration-500">
+               <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Active Roles</p>
+                <p className="text-3xl font-black">12</p>
+              </div>
+              <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Candidates</p>
+                <p className="text-3xl font-black">458</p>
+              </div>
+              <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Interviews</p>
+                <p className="text-3xl font-black">5</p>
+              </div>
+            </div>
           )}
-        </main>
-      </div>
+
+          {activeTab === 'Post a Job' && (
+            <div className="flex flex-col lg:flex-row gap-8 animate-in slide-in-from-bottom-4 duration-500">
+              <div className="flex-1 bg-white p-8 rounded-3xl shadow-xl border border-slate-100">
+                <div className="flex gap-4 mb-8">
+                  <div className="flex-1">
+                    <label className="text-[10px] uppercase font-bold text-slate-400 ml-2 mb-1 block">Job Title</label>
+                    <input 
+                      value={title} 
+                      onChange={(e) => setTitle(e.target.value)}
+                      className="w-full p-4 bg-slate-50 rounded-xl border-none focus:ring-2 focus:ring-indigo-500 transition-all" 
+                      placeholder="e.g. Senior Software Engineer"
+                    />
+                  </div>
+                  <div className="w-32">
+                    <label className="text-[10px] uppercase font-bold text-slate-400 ml-2 mb-1 block">Salary</label>
+                    <input defaultValue="55000" className="w-full p-4 bg-slate-50 rounded-xl border-none font-mono text-center" />
+                  </div>
+                </div>
+
+                <div className="mb-4 flex justify-between items-center">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Description</label>
+                  <button 
+                    onClick={generateDescription}
+                    disabled={isGenerating}
+                    className="flex items-center gap-2 text-indigo-600 font-bold text-sm hover:underline"
+                  >
+                    {isGenerating ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
+                    Generate with Gemini
+                  </button>
+                </div>
+                
+                <textarea 
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Click 'Generate' to create a description..." 
+                  className="w-full h-80 p-6 bg-slate-50 rounded-2xl border-none mb-6 resize-none focus:ring-2 focus:ring-indigo-500 leading-relaxed"
+                />
+
+                <button className="w-full py-5 bg-[#0F172A] text-white rounded-2xl font-black text-lg hover:bg-indigo-600 transition-all shadow-lg">
+                  Publish Requisition 🚀
+                </button>
+              </div>
+
+              <div className="w-full lg:w-80">
+                <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Market Health</p>
+                  <h3 className={`text-2xl font-bold ${title ? 'text-slate-900' : 'text-slate-200'}`}>
+                    {title || "Awaiting Title"}
+                  </h3>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {['Candidates', 'Analytics', 'Settings'].includes(activeTab) && (
+            <div className="p-12 text-center text-slate-400 border-2 border-dashed border-slate-200 rounded-3xl">
+              <p className="italic">The {activeTab} module is currently under development.</p>
+            </div>
+          )}
+        </section>
+      </main>
     </div>
   );
 }
