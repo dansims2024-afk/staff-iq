@@ -1,3 +1,3 @@
-body {
-  background-color: #ff00ff !important; /* Bright Pink */
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
