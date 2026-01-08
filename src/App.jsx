@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 
 const App = () => {
   // Navigation State
-  const [activeTab, setActiveTab] = useState('pipeline'); // 'pipeline', 'post-job', or 'job-settings'
+  const [activeTab, setActiveTab] = useState('pipeline'); 
   
-  // Job Form State (For Google)
+  // Job Form State
   const [jobForm, setJobForm] = useState({
     title: "Store Manager",
     location: "Plainsboro, NJ",
@@ -13,11 +13,11 @@ const App = () => {
     description: "We are seeking a dynamic leader..."
   });
 
-  // Slider State (For Job Settings)
+  // Slider State
   const [skills, setSkills] = useState([
-    { id: 'financial', label: 'Financial Literacy', value: 40, subtext: 'Importance of P&L, Inventory, Math skills.' },
-    { id: 'leadership', label: 'Leadership & Management', value: 35, subtext: 'Importance of Team Size, Training, Retention.' },
-    { id: 'operations', label: 'Operations & Logistics', value: 25, subtext: 'Importance of Scheduling, Merchandising, Safety.' },
+    { id: 'financial', label: 'Financial Literacy', value: 40, subtext: 'P&L, Inventory, Math skills.' },
+    { id: 'leadership', label: 'Leadership & Management', value: 35, subtext: 'Team Size, Training, Retention.' },
+    { id: 'operations', label: 'Operations & Logistics', value: 25, subtext: 'Scheduling, Merchandising, Safety.' },
   ]);
 
   const handleSliderChange = (id, newValue) => {
@@ -58,7 +58,7 @@ const App = () => {
             Active Pipeline
           </button>
           
-          {/* TAB 2: POST A JOB (THIS IS THE BUTTON) */}
+          {/* TAB 2: POST A JOB (THIS IS IT!) */}
           <button 
             onClick={() => setActiveTab('post-job')}
             className={`w-full text-left px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'post-job' ? 'bg-[#1F2937] text-white shadow-lg border-l-4 border-indigo-500' : 'text-slate-400 hover:bg-slate-800'}`}
@@ -101,7 +101,6 @@ const App = () => {
             </div>
             
             <div className="space-y-4">
-               {/* Candidate Card 1 */}
                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
                   <div className="flex items-center gap-6">
                     <div className="w-16 h-16 rounded-full border-4 border-green-500 flex items-center justify-center font-black text-green-600 text-2xl">89</div>
@@ -133,23 +132,6 @@ const App = () => {
                   <input type="text" value={jobForm.location} onChange={(e) => setJobForm({...jobForm, location: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-900" />
                 </div>
               </div>
-
-              <div className="grid grid-cols-2 gap-8">
-                <div>
-                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest block mb-2">Min Salary</label>
-                  <input type="number" value={jobForm.salaryMin} onChange={(e) => setJobForm({...jobForm, salaryMin: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-900" />
-                </div>
-                <div>
-                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest block mb-2">Max Salary</label>
-                  <input type="number" value={jobForm.salaryMax} onChange={(e) => setJobForm({...jobForm, salaryMax: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-900" />
-                </div>
-              </div>
-
-              <div>
-                <label className="text-xs font-black text-slate-400 uppercase tracking-widest block mb-2">Description</label>
-                <textarea rows="5" value={jobForm.description} onChange={(e) => setJobForm({...jobForm, description: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-medium text-slate-600 outline-none focus:ring-2 focus:ring-indigo-500" />
-              </div>
-
               <button className="w-full bg-[#111827] text-white font-black py-4 rounded-xl hover:bg-indigo-600 transition-all shadow-xl shadow-indigo-100 flex items-center justify-center gap-2">
                 Publish to Google
               </button>
@@ -174,13 +156,8 @@ const App = () => {
                       onChange={(e) => handleSliderChange(skill.id, parseFloat(e.target.value))} 
                       className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
                     />
-                    <p className="text-xs text-slate-400 mt-2">{skill.subtext}</p>
                   </div>
                 ))}
-                
-                <button className="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100">
-                  Save & Recalculate Scores
-                </button>
              </div>
           </div>
         )}
