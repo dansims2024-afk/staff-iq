@@ -1,123 +1,117 @@
 import React, { useState } from 'react';
 
 const App = () => {
-  const [activeTab, setActiveTab] = useState('pipeline');
-  const [jobForm, setJobForm] = useState({ title: '', location: '', salary: '' });
+  // Navigation State
+  const [activeTab, setActiveTab] = useState('pipeline'); 
+  
+  // Job Form State
+  const [jobForm, setJobForm] = useState({
+    title: "Store Manager",
+    location: "Plainsboro, NJ",
+    salaryMin: "65000",
+    salaryMax: "85000",
+    description: "We are seeking a dynamic leader..."
+  });
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+    <div className="flex min-h-screen bg-[#F8FAFC] font-sans text-slate-900">
       
-      {/* --- NEW TOP NAVIGATION BAR --- */}
-      <div className="bg-[#0F172A] text-white shadow-md">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      {/* SIDEBAR */}
+      <div className="w-64 bg-[#0F172A] text-white p-6 flex flex-col fixed h-full z-10">
+        <div className="mb-10 px-2">
+          <span className="text-2xl font-black tracking-tighter italic">STAFF <span className="text-indigo-500">IQ</span></span>
+        </div>
+        
+        <nav className="flex-1 space-y-2">
+          {/* 1. ACTIVE PIPELINE */}
+          <button 
+            onClick={() => setActiveTab('pipeline')}
+            className={`w-full text-left px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'pipeline' ? 'bg-[#1F2937] text-white shadow-lg border-l-4 border-indigo-500' : 'text-slate-400 hover:bg-slate-800'}`}
+          >
+            Active Pipeline
+          </button>
           
-          {/* Logo */}
-          <div className="text-2xl font-black italic tracking-tighter">
-            STAFF <span className="text-indigo-500">IQ</span>
+          {/* 2. POST A JOB (The Missing Button) */}
+          <button 
+            onClick={() => setActiveTab('post-job')}
+            className={`w-full text-left px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'post-job' ? 'bg-[#1F2937] text-white shadow-lg border-l-4 border-indigo-500' : 'text-slate-400 hover:bg-slate-800'}`}
+          >
+            Post a Job 🚀
+          </button>
+          
+          <div className="px-4 py-3 text-slate-500 font-bold text-xs uppercase tracking-widest flex items-center justify-between">
+            Team Analysis <span className="bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded text-[10px]">NEW</span>
           </div>
 
-          {/* Top Tabs */}
-          <div className="flex gap-1 bg-[#1E293B] p-1 rounded-xl">
-            <button 
-              onClick={() => setActiveTab('pipeline')}
-              className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'pipeline' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
-            >
-              Active Pipeline
-            </button>
-            <button 
-              onClick={() => setActiveTab('post-job')}
-              className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'post-job' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
-            >
-              + Post a Job
-            </button>
-            <button 
-              onClick={() => setActiveTab('settings')}
-              className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'settings' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
-            >
-              Settings
-            </button>
-          </div>
+          {/* 3. JOB SETTINGS */}
+          <button 
+            onClick={() => setActiveTab('job-settings')}
+            className={`w-full text-left px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'job-settings' ? 'bg-[#1F2937] text-white shadow-lg border-l-4 border-indigo-500' : 'text-slate-400 hover:bg-slate-800'}`}
+          >
+            Job Settings
+          </button>
+        </nav>
 
-          {/* User Profile */}
-          <div className="flex items-center gap-3">
-            <div className="text-right hidden md:block">
-              <div className="text-xs font-bold text-slate-400">LOGGED IN AS</div>
-              <div className="text-sm font-bold">Dan Sims</div>
-            </div>
-            <div className="h-10 w-10 bg-indigo-500 rounded-full flex items-center justify-center font-bold">DS</div>
-          </div>
+        <div className="text-[10px] text-slate-500 mt-auto px-2">
+          Staff-IQ v2.0 <br /> Logged in as Manager
         </div>
       </div>
 
-      {/* --- MAIN CONTENT --- */}
-      <div className="max-w-7xl mx-auto p-8">
+      {/* MAIN CONTENT */}
+      <div className="flex-1 ml-64 p-12">
         
         {/* VIEW 1: PIPELINE */}
         {activeTab === 'pipeline' && (
-          <div className="animate-in fade-in duration-300">
-            <div className="flex justify-between items-center mb-8">
-              <div>
-                <h1 className="text-3xl font-black text-slate-900">Candidate Pipeline</h1>
-                <p className="text-slate-500 font-medium">Active Store Manager Role</p>
-              </div>
-              <button onClick={() => setActiveTab('post-job')} className="bg-slate-900 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-600 transition-colors">
-                Create New Posting
-              </button>
-            </div>
+          <div className="max-w-4xl animate-in fade-in duration-300">
+            <h1 className="text-3xl font-black text-slate-900 mb-2">Active Pipeline</h1>
+            <p className="text-slate-500 mb-8 font-medium">Ranking candidates by Job Intelligence Score</p>
             
-            {/* Candidate Card */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mb-4 flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="h-16 w-16 bg-green-100 rounded-full flex items-center justify-center text-2xl font-black text-green-600 border-4 border-white shadow-sm">92</div>
-                <div>
-                  <h3 className="text-xl font-bold">Alex Rivera</h3>
-                  <p className="text-slate-400 text-sm font-bold uppercase tracking-wider">Top Match</p>
-                </div>
-              </div>
-              <button className="text-indigo-600 font-bold border border-indigo-100 px-6 py-3 rounded-xl hover:bg-indigo-50">View Profile</button>
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+               <div className="flex items-center gap-6">
+                 <div className="w-14 h-14 rounded-full border-4 border-green-500 flex items-center justify-center font-black text-green-600 text-xl">89</div>
+                 <div>
+                   <h4 className="text-lg font-bold">Alex Rivera</h4>
+                   <p className="text-sm text-slate-400 font-medium">Senior Store Manager • Applied 2h ago</p>
+                 </div>
+               </div>
+               <button className="bg-indigo-600 text-white px-6 py-2.5 rounded-xl font-bold shadow-md hover:bg-indigo-700">View Profile</button>
             </div>
           </div>
         )}
 
         {/* VIEW 2: POST A JOB */}
         {activeTab === 'post-job' && (
-          <div className="max-w-2xl mx-auto animate-in zoom-in-95 duration-300">
-            <div className="bg-white p-10 rounded-3xl shadow-xl border border-slate-100">
-              <div className="text-center mb-10">
-                <h2 className="text-3xl font-black text-slate-900">Post to Google Jobs</h2>
-                <p className="text-slate-500 mt-2">Create a structured posting instantly.</p>
-              </div>
-
-              <div className="space-y-6">
+          <div className="max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-300">
+            <h1 className="text-3xl font-black text-slate-900 mb-2">Post a New Job</h1>
+            <p className="text-slate-500 mb-10 font-medium">This data is structured for <span className="text-indigo-600 font-bold uppercase text-xs tracking-widest">Google Indexing</span>.</p>
+            
+            <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-10 space-y-8">
+              <div className="grid grid-cols-2 gap-8">
                 <div>
-                  <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Job Title</label>
-                  <input type="text" className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl font-bold outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g. Store Manager" />
+                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest block mb-2">Job Title</label>
+                  <input type="text" value={jobForm.title} onChange={(e) => setJobForm({...jobForm, title: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-900 outline-none" />
                 </div>
-                
-                <div className="grid grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Location</label>
-                    <input type="text" className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl font-bold outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g. New York, NY" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Salary Range</label>
-                    <input type="text" className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl font-bold outline-none focus:ring-2 focus:ring-indigo-500" placeholder="$60k - $80k" />
-                  </div>
+                <div>
+                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest block mb-2">Location</label>
+                  <input type="text" value={jobForm.location} onChange={(e) => setJobForm({...jobForm, location: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-900" />
                 </div>
-
-                <button className="w-full bg-indigo-600 text-white font-black py-5 rounded-xl text-lg hover:bg-indigo-700 transition-transform active:scale-95 shadow-xl shadow-indigo-200">
-                  Publish Job Now 🚀
-                </button>
               </div>
+              <button className="w-full bg-[#111827] text-white font-black py-4 rounded-xl hover:bg-indigo-600 transition-all shadow-xl shadow-indigo-100">
+                Publish to Google 🚀
+              </button>
             </div>
           </div>
         )}
 
         {/* VIEW 3: SETTINGS */}
-        {activeTab === 'settings' && (
-           <div className="text-center py-20">
-             <h2 className="text-2xl font-bold text-slate-400">Settings Panel</h2>
-           </div>
+        {activeTab === 'job-settings' && (
+          <div className="max-w-2xl animate-in fade-in duration-300">
+             <h1 className="text-3xl font-black text-slate-900 mb-4">Job Intelligence Settings</h1>
+             <p className="text-slate-500 mb-8">Tune the AI to prioritize skills.</p>
+             <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 h-40 flex items-center justify-center text-slate-400 font-bold italic border-dashed border-2">
+               Slider Settings Panel
+             </div>
+          </div>
         )}
 
       </div>
