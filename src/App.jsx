@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { GoogleGenerativeAI } from "@google/generative-ai";
+// We use the direct import which will be resolved by the importmap in your HTML
+import { GoogleGenerativeAI } from "@google/generative-ai"; 
 import { 
   LayoutDashboard, PlusSquare, Users, BarChart3, Settings, Sparkles, Loader2 
 } from 'lucide-react';
@@ -24,7 +25,9 @@ const DashboardView = () => (
       ))}
     </div>
     <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm h-64 flex items-center justify-center">
-      <p className="text-slate-400 italic text-sm">Main Analytics Chart Placeholder</p>
+      <p className="text-slate-400 italic text-sm text-center">
+        Candidate Pipeline & Analytics Chart <br/> (Dashboard is now Active)
+      </p>
     </div>
   </div>
 );
@@ -36,6 +39,8 @@ const PostJobView = () => {
 
   const generateDescription = async () => {
     if (!title) return alert("Please enter a Job Title first!");
+    if (API_KEY === "YOUR_API_KEY_HERE") return alert("Please add your Gemini API Key at the top of the code!");
+    
     setIsGenerating(true);
     try {
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
@@ -44,7 +49,7 @@ const PostJobView = () => {
       setDescription(result.response.text());
     } catch (error) {
       console.error("Gemini Error:", error);
-      alert("Failed to generate. Check your API key.");
+      alert("AI Connection Failed. Ensure your API key is valid.");
     } finally {
       setIsGenerating(false);
     }
@@ -65,7 +70,7 @@ const PostJobView = () => {
           </div>
           <div className="w-32">
             <label className="text-[10px] uppercase font-bold text-slate-400 ml-2 mb-1 block">Salary</label>
-            <input defaultValue="55000" className="w-full p-4 bg-slate-50 rounded-xl border-none font-mono" />
+            <input defaultValue="55000" className="w-full p-4 bg-slate-50 rounded-xl border-none font-mono text-center" />
           </div>
         </div>
 
@@ -74,7 +79,7 @@ const PostJobView = () => {
           <button 
             onClick={generateDescription}
             disabled={isGenerating}
-            className="flex items-center gap-2 text-indigo-600 font-bold text-sm"
+            className="flex items-center gap-2 text-indigo-600 font-bold text-sm hover:text-indigo-800"
           >
             {isGenerating ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
             Generate with Gemini
@@ -84,11 +89,11 @@ const PostJobView = () => {
         <textarea 
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="Click Generate to see Gemini's magic..." 
-          className="w-full h-80 p-6 bg-slate-50 rounded-2xl border-none mb-6 resize-none focus:ring-2 focus:ring-indigo-500"
+          placeholder="Enter a title and click 'Generate'..." 
+          className="w-full h-80 p-6 bg-slate-50 rounded-2xl border-none mb-6 resize-none focus:ring-2 focus:ring-indigo-500 leading-relaxed"
         />
 
-        <button className="w-full py-5 bg-[#0F172A] text-white rounded-2xl font-black text-lg flex items-center justify-center gap-3">
+        <button className="w-full py-5 bg-[#0F172A] text-white rounded-2xl font-black text-lg flex items-center justify-center gap-3 hover:bg-indigo-600 transition-all">
           Publish Requisition 🚀
         </button>
       </div>
@@ -99,13 +104,15 @@ const PostJobView = () => {
           <h3 className={`text-2xl font-bold ${title ? 'text-slate-900' : 'text-slate-200'}`}>
             {title || "Awaiting Title"}
           </h3>
+          <p className="text-slate-400 text-sm italic mt-2">
+            {title ? "Analyzing market trends..." : '"Enter a role to analyze market data."'}
+          </p>
         </div>
       </div>
     </div>
   );
 };
 
-// --- MAIN APPLICATION ---
 export default function App() {
   const [activeTab, setActiveTab] = useState('Post a Job');
 
@@ -119,21 +126,15 @@ export default function App() {
 
   return (
     <div className="flex min-h-screen bg-slate-50 text-slate-900 font-sans">
-      {/* SIDEBAR */}
-      <div className="w-64 bg-[#0F172A] text-white flex flex-col p-6 fixed h-full">
-        <div className="flex items-center gap-2 mb-12">
-          <h1 className="text-xl font-black italic tracking-tighter uppercase">Staff IQ</h1>
-        </div>
-        
+      <div className="w-64 bg-[#0F172A] text-white flex flex-col p-6 fixed h-full border-r border-slate-800">
+        <h1 className="text-xl font-black italic tracking-tighter uppercase mb-12">Staff IQ</h1>
         <nav className="flex-1 space-y-1">
           {menuItems.map((item) => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
-                activeTab === item.id 
-                  ? 'bg-indigo-600 text-white' 
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                activeTab === item.id ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800'
               }`}
             >
               {item.icon}
@@ -143,17 +144,15 @@ export default function App() {
         </nav>
       </div>
 
-      {/* CONTENT AREA */}
       <div className="flex-1 ml-64 min-h-screen">
-        <header className="px-8 pt-8 pb-4 bg-slate-50">
+        <header className="px-8 pt-8 pb-4 sticky top-0 bg-slate-50/80 backdrop-blur-md">
           <h2 className="text-3xl font-black italic tracking-tight">{activeTab}</h2>
         </header>
-
         <main className="max-w-6xl">
           {activeTab === 'Dashboard' && <DashboardView />}
           {activeTab === 'Post a Job' && <PostJobView />}
           {['Candidates', 'Analytics', 'Settings'].includes(activeTab) && (
-            <div className="p-8 text-slate-400 italic">This module is coming soon...</div>
+            <div className="p-8 text-slate-400 italic font-medium">Coming Soon: Deep Candidate Analytics</div>
           )}
         </main>
       </div>
