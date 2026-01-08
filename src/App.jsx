@@ -4,7 +4,7 @@ const App = () => {
   // Navigation State
   const [activeTab, setActiveTab] = useState('pipeline'); // 'pipeline', 'post-job', or 'job-settings'
   
-  // Job Form State
+  // Job Form State (For Google)
   const [jobForm, setJobForm] = useState({
     title: "Store Manager",
     location: "Plainsboro, NJ",
@@ -13,11 +13,11 @@ const App = () => {
     description: "We are seeking a dynamic leader..."
   });
 
-  // Slider State
+  // Slider State (For Job Settings)
   const [skills, setSkills] = useState([
-    { id: 'financial', label: 'Financial Literacy', value: 40, subtext: 'P&L, Inventory, Math skills.' },
-    { id: 'leadership', label: 'Leadership & Management', value: 35, subtext: 'Team Size, Training, Retention.' },
-    { id: 'operations', label: 'Operations & Logistics', value: 25, subtext: 'Scheduling, Merchandising, Safety.' },
+    { id: 'financial', label: 'Financial Literacy', value: 40, subtext: 'Importance of P&L, Inventory, Math skills.' },
+    { id: 'leadership', label: 'Leadership & Management', value: 35, subtext: 'Importance of Team Size, Training, Retention.' },
+    { id: 'operations', label: 'Operations & Logistics', value: 25, subtext: 'Importance of Scheduling, Merchandising, Safety.' },
   ]);
 
   const handleSliderChange = (id, newValue) => {
@@ -58,7 +58,7 @@ const App = () => {
             Active Pipeline
           </button>
           
-          {/* TAB 2: POST A JOB (THIS IS THE BUTTON YOU NEED) */}
+          {/* TAB 2: POST A JOB (THIS IS THE BUTTON) */}
           <button 
             onClick={() => setActiveTab('post-job')}
             className={`w-full text-left px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'post-job' ? 'bg-[#1F2937] text-white shadow-lg border-l-4 border-indigo-500' : 'text-slate-400 hover:bg-slate-800'}`}
