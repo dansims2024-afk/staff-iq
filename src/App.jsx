@@ -1,143 +1,121 @@
 import React, { useState } from 'react';
 
 const App = () => {
-  const [activeTab, setActiveTab] = useState('pipeline'); 
+  const [activeTab, setActiveTab] = useState('post-job'); 
   const [isGenerating, setIsGenerating] = useState(false);
-  
-  // --- STATE: JOBS & CANDIDATES ---
-  const [jobs, setJobs] = useState([
-    { id: 101, title: "Store Manager", location: "Plainsboro, NJ", status: "Active", applicants: 15 },
-  ]);
-
-  const [jobForm, setJobForm] = useState({
-    title: "",
-    location: "",
-    salaryMin: "60000",
-    salaryMax: "80000",
-    description: ""
+  const [jobForm, setJobForm] = useState({ 
+    title: '', 
+    salary: '55000', 
+    location: 'Plainsboro, NJ',
+    description: '' 
   });
 
-  const [candidates, setCandidates] = useState([
-    { id: 1, name: 'Alex Rivera', role: 'Store Manager', score: 89, time: '2h ago', status: 'Screening', skills: ['P&L', 'Leadership'] },
-  ]);
-
-  // --- GEMINI FUNCTIONS ---
-  const generateAIDescription = () => {
-    if (!jobForm.title) return alert("Enter a Job Title first!");
+  // --- GEMINI: GENERATE DESCRIPTION ---
+  const handleAiGenerate = () => {
+    if (!jobForm.title) return alert("Please enter a job title first!");
     setIsGenerating(true);
+    
+    // Simulating Gemini's SEO-optimized output
     setTimeout(() => {
-      const aiText = `Join Staff IQ as our next ${jobForm.title}! We are looking for a leader in ${jobForm.location} who can drive sales and manage high-performing teams. Key responsibilities include hitting monthly targets and maintaining excellence in customer service.`;
-      setJobForm({ ...jobForm, description: aiText });
+      const generatedText = `Staff IQ is seeking a professional ${jobForm.title} to join our growing team in ${jobForm.location}. 
+
+RESPONSIBILITIES:
+- Lead and develop a high-performing team to meet business objectives.
+- Oversee daily operations and ensure exceptional service standards.
+- Manage inventory and P&L reports to optimize store profitability.
+
+QUALIFICATIONS:
+- Proven experience in retail management or a similar leadership role.
+- Strong financial literacy and ability to analyze market trends.
+- Excellent communication and conflict-resolution skills.
+
+BENEFITS:
+- Competitive annual salary of $${jobForm.salary}.
+- Opportunities for career advancement within the Staff IQ network.
+- Comprehensive benefits package.`;
+
+      setJobForm({ ...jobForm, description: generatedText });
       setIsGenerating(false);
-    }, 1200);
+    }, 1500);
   };
 
-  const handlePublish = () => {
-    if (!jobForm.title) return alert("Title is required");
-    const newJob = { 
-      id: Date.now(), 
-      title: jobForm.title, 
-      location: jobForm.location, 
-      status: "Active", 
-      applicants: 0 
-    };
-    setJobs([newJob, ...jobs]);
-    setActiveTab('manage-jobs'); // Directs to the hub after posting
-    alert("🚀 Job Published to your Dashboard!");
+  // --- MARKET LOGIC ---
+  const getMarketPulse = () => {
+    const salary = parseInt(jobForm.salary);
+    if (!jobForm.title) return { status: 'Awaiting Title', color: 'text-slate-300', advice: "Enter a role to analyze market data." };
+    if (salary < 50000) return { status: 'Critical', color: 'text-red-500', advice: "Salary is below the Plainsboro average for managers." };
+    return { status: 'Healthy', color: 'text-green-500', advice: "Salary is competitive for the NJ retail market." };
   };
+
+  const pulse = getMarketPulse();
 
   return (
     <div className="flex min-h-screen bg-[#F8FAFC] font-sans text-slate-900">
       
       {/* SIDEBAR */}
-      <div className="w-64 bg-[#0F172A] text-white p-6 flex flex-col fixed h-full z-10 shadow-2xl">
+      <div className="w-64 bg-[#0F172A] text-white p-6 flex flex-col fixed h-full z-10">
         <div className="mb-10 px-2 font-black italic text-2xl tracking-tighter uppercase underline decoration-indigo-500">Staff IQ</div>
         <nav className="flex-1 space-y-2 text-sm">
-          <button onClick={() => setActiveTab('pipeline')} className={`w-full text-left px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'pipeline' ? 'bg-indigo-600' : 'text-slate-400 hover:bg-slate-800'}`}>Candidate Pipeline</button>
-          <button onClick={() => setActiveTab('manage-jobs')} className={`w-full text-left px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'manage-jobs' ? 'bg-indigo-600' : 'text-slate-400 hover:bg-slate-800'}`}>Manage Jobs</button>
-          <div className="pt-4 pb-2 px-4 text-[10px] uppercase tracking-widest text-slate-500 font-black">Hiring Tools</div>
-          <button onClick={() => setActiveTab('post-job')} className={`w-full text-left px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'post-job' ? 'bg-indigo-600' : 'text-slate-400 hover:bg-slate-800'}`}>Post a Job 🚀</button>
+          <button onClick={() => setActiveTab('dashboard')} className={`w-full text-left px-4 py-3 rounded-xl font-bold ${activeTab === 'dashboard' ? 'bg-indigo-600' : 'text-slate-400 hover:bg-slate-800'}`}>Dashboard</button>
+          <button onClick={() => setActiveTab('post-job')} className={`w-full text-left px-4 py-3 rounded-xl font-bold ${activeTab === 'post-job' ? 'bg-indigo-600' : 'text-slate-400 hover:bg-slate-800'}`}>Post a Job 🚀</button>
         </nav>
       </div>
 
       {/* MAIN CONTENT */}
       <div className="flex-1 ml-64 p-12">
-        
-        {/* VIEW: POST A JOB (RESTORED) */}
-        {activeTab === 'post-job' && (
-          <div className="max-w-3xl animate-in slide-in-from-bottom-6 duration-500">
-            <h1 className="text-4xl font-black mb-2 text-slate-900">Create a Posting</h1>
-            <p className="text-slate-500 mb-10 font-medium italic">Gemini will optimize this for Google Job Search SEO.</p>
-            
-            <div className="bg-white rounded-[2.5rem] shadow-2xl p-10 space-y-8 border border-slate-50">
-              <div className="grid grid-cols-2 gap-8">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Job Title</label>
-                  <input type="text" placeholder="e.g. Store Manager" value={jobForm.title} onChange={(e) => setJobForm({...jobForm, title: e.target.value})} className="w-full p-4 bg-slate-50 rounded-2xl font-bold border-none focus:ring-2 focus:ring-indigo-500 outline-none" />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Location</label>
-                  <input type="text" placeholder="e.g. Plainsboro, NJ" value={jobForm.location} onChange={(e) => setJobForm({...jobForm, location: e.target.value})} className="w-full p-4 bg-slate-50 rounded-2xl font-bold border-none focus:ring-2 focus:ring-indigo-500 outline-none" />
-                </div>
+        <div className="max-w-6xl grid grid-cols-1 lg:grid-cols-3 gap-12 animate-in fade-in">
+          
+          {/* FORM AREA */}
+          <div className="lg:col-span-2 space-y-8">
+            <h1 className="text-4xl font-black italic tracking-tight">Post a Job</h1>
+            <div className="bg-white p-10 rounded-[3rem] shadow-xl border border-slate-50 space-y-6">
+              <div className="grid grid-cols-2 gap-6">
+                <input 
+                  type="text" placeholder="Job Title" value={jobForm.title}
+                  onChange={(e) => setJobForm({...jobForm, title: e.target.value})}
+                  className="w-full p-5 bg-slate-50 rounded-2xl font-bold border-none focus:ring-2 focus:ring-indigo-500 outline-none"
+                />
+                <input 
+                  type="number" value={jobForm.salary}
+                  onChange={(e) => setJobForm({...jobForm, salary: e.target.value})}
+                  className="w-full p-5 bg-slate-50 rounded-2xl font-bold border-none focus:ring-2 focus:ring-indigo-500 outline-none"
+                />
               </div>
 
               <div className="space-y-2">
                 <div className="flex justify-between items-center px-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Job Description</label>
-                  <button onClick={generateAIDescription} className="text-xs font-black text-indigo-600 hover:scale-105 transition-transform">
-                    {isGenerating ? "✨ Gemini is writing..." : "✨ Generate with AI"}
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Description</label>
+                  <button 
+                    onClick={handleAiGenerate}
+                    className="text-xs font-black text-indigo-600 hover:scale-105 transition-all flex items-center gap-1"
+                  >
+                    {isGenerating ? "✨ Gemini is writing..." : "✨ Generate with Gemini"}
                   </button>
                 </div>
-                <textarea rows="6" value={jobForm.description} onChange={(e) => setJobForm({...jobForm, description: e.target.value})} className="w-full bg-slate-50 border-none rounded-3xl p-6 text-slate-600 font-medium leading-relaxed outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Describe the role or use AI..." />
+                <textarea 
+                  rows="10" value={jobForm.description}
+                  onChange={(e) => setJobForm({...jobForm, description: e.target.value})}
+                  className="w-full bg-slate-50 border-none rounded-3xl p-6 text-sm font-medium leading-relaxed text-slate-600 outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="Click Generate to see Gemini's magic..."
+                />
               </div>
-
-              <button onClick={handlePublish} className="w-full bg-[#0F172A] text-white font-black py-5 rounded-2xl hover:bg-indigo-600 transition-all shadow-xl shadow-indigo-100 flex items-center justify-center gap-3 text-lg">
-                Publish to Dashboard & Google 🚀
+              
+              <button className="w-full bg-[#0F172A] text-white py-6 rounded-2xl font-black text-lg hover:bg-indigo-600 transition-all shadow-xl">
+                Publish Requisition 🚀
               </button>
             </div>
           </div>
-        )}
 
-        {/* VIEW: MANAGE JOBS */}
-        {activeTab === 'manage-jobs' && (
-          <div className="max-w-4xl animate-in fade-in">
-             <h1 className="text-3xl font-black mb-8">Your Open Jobs</h1>
-             <div className="grid grid-cols-1 gap-4">
-                {jobs.map(job => (
-                  <div key={job.id} className="bg-white p-8 rounded-3xl border border-slate-100 flex justify-between items-center shadow-sm hover:border-indigo-200 transition-all">
-                    <div>
-                      <h3 className="text-xl font-black text-slate-900">{job.title}</h3>
-                      <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">{job.location} • <span className="text-green-500">Active</span></p>
-                    </div>
-                    <div className="text-center bg-indigo-50 px-6 py-2 rounded-2xl">
-                      <div className="text-2xl font-black text-indigo-600">{job.applicants}</div>
-                      <div className="text-[9px] uppercase font-black text-indigo-300">Applicants</div>
-                    </div>
-                  </div>
-                ))}
-             </div>
+          {/* INSIGHTS SIDEBAR */}
+          <div className="space-y-6">
+            <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
+              <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-6">Market Health</h3>
+              <div className={`text-3xl font-black mb-2 ${pulse.color}`}>{pulse.status}</div>
+              <p className="text-xs font-bold text-slate-500 italic leading-relaxed">"{pulse.advice}"</p>
+            </div>
           </div>
-        )}
 
-        {/* VIEW: PIPELINE */}
-        {activeTab === 'pipeline' && (
-          <div className="max-w-4xl animate-in fade-in">
-            <h1 className="text-4xl font-black mb-10">Candidate Pipeline</h1>
-            {candidates.map((c) => (
-              <div key={c.id} className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 flex items-center justify-between mb-4">
-                <div className="flex items-center gap-6">
-                  <div className="w-16 h-16 rounded-full border-4 border-green-500 flex items-center justify-center font-black text-green-600 text-2xl">{c.score}</div>
-                  <div>
-                    <h4 className="text-xl font-bold">{c.name}</h4>
-                    <p className="text-slate-400">{c.role} • {c.time}</p>
-                  </div>
-                </div>
-                <button className="bg-indigo-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-indigo-700 transition-all">Profile</button>
-              </div>
-            ))}
-          </div>
-        )}
-
+        </div>
       </div>
     </div>
   );
