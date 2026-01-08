@@ -1,7 +1,4 @@
 import React, { useState } from 'react';
-import { 
-  LayoutDashboard, PlusSquare, Users, BarChart3, Settings, Sparkles, Loader2 
-} from 'lucide-react';
 
 // --- MAIN APPLICATION ---
 export default function App() {
@@ -15,8 +12,8 @@ export default function App() {
     if (!title) return alert("Please enter a Job Title first!");
     
     // Checks if the script we added to index.html is loaded
-    if (!window.google) {
-      return alert("AI Library is still loading or missing from index.html. Please check your script tag.");
+    if (!window.google || !window.google.generativeAi) {
+      return alert("AI Library is still loading. Please wait a moment or check your index.html script tag.");
     }
 
     setIsGenerating(true);
@@ -38,34 +35,42 @@ export default function App() {
   };
 
   const menuItems = [
-    { id: 'Dashboard', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
-    { id: 'Post a Job', icon: <PlusSquare size={20} />, label: 'Post a Job 🚀' },
-    { id: 'Candidates', icon: <Users size={20} />, label: 'Candidates' },
-    { id: 'Analytics', icon: <BarChart3 size={20} />, label: 'Analytics' },
-    { id: 'Settings', icon: <Settings size={20} />, label: 'Settings' },
+    { id: 'Dashboard', icon: '📊', label: 'Dashboard' },
+    { id: 'Post a Job', icon: '🚀', label: 'Post a Job' },
+    { id: 'Candidates', icon: '👥', label: 'Candidates' },
+    { id: 'Analytics', icon: '📈', label: 'Analytics' },
+    { id: 'Settings', icon: '⚙️', label: 'Settings' },
   ];
 
   return (
-    <div className="flex min-h-screen bg-slate-50 text-slate-900 font-sans">
+    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8fafc', color: '#0f172a', fontFamily: 'sans-serif' }}>
       {/* SIDEBAR */}
-      <aside className="w-64 bg-[#0F172A] text-white flex flex-col p-6 fixed h-full shadow-2xl">
-        <div className="flex items-center gap-2 mb-12">
-          <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center font-bold italic">S</div>
-          <h1 className="text-xl font-black italic tracking-tighter uppercase">Staff IQ</h1>
-        </div>
+      <aside style={{ width: '256px', backgroundColor: '#0f172a', color: 'white', display: 'flex', flexDirection: 'column', padding: '24px', position: 'fixed', height: '100%' }}>
+        <h1 style={{ fontSize: '20px', fontWeight: '900', fontStyle: 'italic', textTransform: 'uppercase', marginBottom: '48px' }}>Staff IQ</h1>
         
-        <nav className="flex-1 space-y-1">
+        <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
           {menuItems.map((item) => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
-                activeTab === item.id 
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' 
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800'
-              }`}
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '12px 16px',
+                borderRadius: '12px',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                backgroundColor: activeTab === item.id ? '#4f46e5' : 'transparent',
+                color: activeTab === item.id ? 'white' : '#94a3b8',
+                textAlign: 'left'
+              }}
             >
-              {item.icon}
+              <span>{item.icon}</span>
               {item.label}
             </button>
           ))}
@@ -73,57 +78,56 @@ export default function App() {
       </aside>
 
       {/* MAIN CONTENT */}
-      <main className="flex-1 ml-64 min-h-screen">
-        <header className="px-8 pt-8 pb-4 sticky top-0 bg-slate-50/90 backdrop-blur-md z-10">
-          <h2 className="text-3xl font-black italic tracking-tight">{activeTab}</h2>
+      <main style={{ flex: 1, marginLeft: '256px', minHeight: '100vh' }}>
+        <header style={{ padding: '32px 32px 16px 32px' }}>
+          <h2 style={{ fontSize: '30px', fontWeight: '900', fontStyle: 'italic' }}>{activeTab}</h2>
         </header>
 
-        <section className="max-w-6xl p-8">
+        <section style={{ maxWidth: '1152px', padding: '32px' }}>
           {activeTab === 'Dashboard' && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in duration-500">
-               <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Active Roles</p>
-                <p className="text-3xl font-black">12</p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px' }}>
+               <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '16px', border: '1px solid #f1f5f9', boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)' }}>
+                <p style={{ color: '#64748b', fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', marginBottom: '4px' }}>Active Roles</p>
+                <p style={{ fontSize: '30px', fontWeight: '900' }}>12</p>
               </div>
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Candidates</p>
-                <p className="text-3xl font-black">458</p>
+              <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '16px', border: '1px solid #f1f5f9', boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)' }}>
+                <p style={{ color: '#64748b', fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', marginBottom: '4px' }}>Candidates</p>
+                <p style={{ fontSize: '30px', fontWeight: '900' }}>458</p>
               </div>
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Interviews</p>
-                <p className="text-3xl font-black">5</p>
+              <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '16px', border: '1px solid #f1f5f9', boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)' }}>
+                <p style={{ color: '#64748b', fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', marginBottom: '4px' }}>Interviews</p>
+                <p style={{ fontSize: '30px', fontWeight: '900' }}>5</p>
               </div>
             </div>
           )}
 
           {activeTab === 'Post a Job' && (
-            <div className="flex flex-col lg:flex-row gap-8 animate-in slide-in-from-bottom-4 duration-500">
-              <div className="flex-1 bg-white p-8 rounded-3xl shadow-xl border border-slate-100">
-                <div className="flex gap-4 mb-8">
-                  <div className="flex-1">
-                    <label className="text-[10px] uppercase font-bold text-slate-400 ml-2 mb-1 block">Job Title</label>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+              <div style={{ backgroundColor: 'white', padding: '32px', borderRadius: '24px', border: '1px solid #f1f5f9', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}>
+                <div style={{ display: 'flex', gap: '16px', marginBottom: '32px' }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '10px', fontWeight: 'bold', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '4px', display: 'block' }}>Job Title</label>
                     <input 
                       value={title} 
                       onChange={(e) => setTitle(e.target.value)}
-                      className="w-full p-4 bg-slate-50 rounded-xl border-none focus:ring-2 focus:ring-indigo-500 transition-all" 
+                      style={{ width: '100%', padding: '16px', backgroundColor: '#f8fafc', borderRadius: '12px', border: 'none', outline: 'none' }} 
                       placeholder="e.g. Senior Software Engineer"
                     />
                   </div>
-                  <div className="w-32">
-                    <label className="text-[10px] uppercase font-bold text-slate-400 ml-2 mb-1 block">Salary</label>
-                    <input defaultValue="55000" className="w-full p-4 bg-slate-50 rounded-xl border-none font-mono text-center" />
+                  <div style={{ width: '128px' }}>
+                    <label style={{ fontSize: '10px', fontWeight: 'bold', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '4px', display: 'block' }}>Salary</label>
+                    <input defaultValue="55000" style={{ width: '100%', padding: '16px', backgroundColor: '#f8fafc', borderRadius: '12px', border: 'none', textAlign: 'center' }} />
                   </div>
                 </div>
 
-                <div className="mb-4 flex justify-between items-center">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Description</label>
+                <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label style={{ fontSize: '10px', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase' }}>Description</label>
                   <button 
                     onClick={generateDescription}
                     disabled={isGenerating}
-                    className="flex items-center gap-2 text-indigo-600 font-bold text-sm hover:underline"
+                    style={{ background: 'none', border: 'none', color: '#4f46e5', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' }}
                   >
-                    {isGenerating ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
-                    Generate with Gemini
+                    {isGenerating ? '⌛ Generating...' : '✨ Generate with Gemini'}
                   </button>
                 </div>
                 
@@ -131,28 +135,19 @@ export default function App() {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Click 'Generate' to create a description..." 
-                  className="w-full h-80 p-6 bg-slate-50 rounded-2xl border-none mb-6 resize-none focus:ring-2 focus:ring-indigo-500 leading-relaxed"
+                  style={{ width: '100%', height: '320px', padding: '24px', backgroundColor: '#f8fafc', borderRadius: '16px', border: 'none', marginBottom: '24px', outline: 'none', resize: 'none', lineHeight: '1.6' }}
                 />
 
-                <button className="w-full py-5 bg-[#0F172A] text-white rounded-2xl font-black text-lg hover:bg-indigo-600 transition-all shadow-lg">
+                <button style={{ width: '100%', padding: '20px', backgroundColor: '#0f172a', color: 'white', borderRadius: '16px', fontWeight: '900', fontSize: '18px', border: 'none', cursor: 'pointer' }}>
                   Publish Requisition 🚀
                 </button>
-              </div>
-
-              <div className="w-full lg:w-80">
-                <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Market Health</p>
-                  <h3 className={`text-2xl font-bold ${title ? 'text-slate-900' : 'text-slate-200'}`}>
-                    {title || "Awaiting Title"}
-                  </h3>
-                </div>
               </div>
             </div>
           )}
 
           {['Candidates', 'Analytics', 'Settings'].includes(activeTab) && (
-            <div className="p-12 text-center text-slate-400 border-2 border-dashed border-slate-200 rounded-3xl">
-              <p className="italic">The {activeTab} module is currently under development.</p>
+            <div style={{ padding: '48px', textAlign: 'center', color: '#94a3b8', border: '2px dashed #e2e8f0', borderRadius: '24px' }}>
+              <p style={{ fontStyle: 'italic' }}>The {activeTab} module is coming soon.</p>
             </div>
           )}
         </section>
