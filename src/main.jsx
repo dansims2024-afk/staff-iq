@@ -1,9 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import './index.css'
+import App from './App.jsx'
+// I CHANGED THIS LINE BELOW TO MATCH YOUR FILE NAME
+import './App.css' 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <div style={{backgroundColor: 'red', color: 'white', height: '100vh', padding: '50px', fontSize: '40px', fontWeight: 'bold'}}>
-    SYSTEM CHECK: CONNECTED
-  </div>
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
 )
