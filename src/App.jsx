@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 
 const App = () => {
-  const [view, setView] = useState('candidates'); // 'candidates' or 'job-editor'
   const [activeCandidate, setActiveCandidate] = useState(null);
   const [copied, setCopied] = useState(false);
 
-  // 1. Slider State
+  // 1. Sliders State (Forces 100%)
   const [skills, setSkills] = useState([
     { id: 'financial', label: 'Financial Literacy', value: 40, color: 'bg-blue-100 text-blue-700', barColor: 'bg-blue-500', subtext: 'P&L, Inventory, Math' },
     { id: 'leadership', label: 'Leadership & Management', value: 35, color: 'bg-purple-100 text-purple-700', barColor: 'bg-purple-500', subtext: 'Team Size, Training, Retention' },
     { id: 'operations', label: 'Operations & Logistics', value: 25, color: 'bg-orange-100 text-orange-700', barColor: 'bg-orange-500', subtext: 'Scheduling, Merchandising, Safety' },
   ]);
 
-  // 2. Job Posting State (The data Google "grabs")
-  const [jobPosting, setJobPosting] = useState({
+  // 2. NEW: The "Post a Job" Form State
+  // These fields are specifically required by Google Jobs (Schema.org)
+  const [jobForm, setJobForm] = useState({
     title: "Store Manager",
     company: "Global Retail Corp",
     location: "Plainsboro, NJ",
@@ -24,11 +24,10 @@ const App = () => {
 
   // 3. Mock Candidates
   const [candidates] = useState([
-    { id: 1, name: 'Alex Rivera', status: 'New', summary: "High-performer in retail finance.", scores: { financial: 92, leadership: 55, operations: 40 }, matchedSkills: [{ name: 'P&L Management', cat: 'financial' }] },
-    { id: 2, name: 'Jordan Smith', status: 'New', summary: "Leadership specialist.", scores: { financial: 40, leadership: 95, operations: 75 }, matchedSkills: [{ name: 'Retention Strategy', cat: 'leadership' }] }
+    { id: 1, name: 'Alex Rivera', scores: { financial: 92, leadership: 55, operations: 40 }, summary: "Finance expert.", matchedSkills: [{name: 'P&L', cat: 'financial'}] },
+    { id: 2, name: 'Jordan Smith', scores: { financial: 40, leadership: 95, operations: 75 }, summary: "Leadership pro.", matchedSkills: [{name: 'Retention', cat: 'leadership'}] }
   ]);
 
-  // Proportional Slider Logic
   const handleSliderChange = (id, newValue) => {
     setSkills((prevSkills) => {
       const changedIndex = prevSkills.findIndex((s) => s.id === id);
@@ -53,10 +52,9 @@ const App = () => {
     return skills.reduce((total, skill) => total + (candidateScores[skill.id] * (skill.value / 100)), 0);
   };
 
-  const handleShareLink = () => {
-    navigator.clipboard.writeText(window.location.origin + "/jobs/store-manager");
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handlePublish = () => {
+    alert(`Published to Google! \nTitle: ${jobForm.title} \nLocation: ${jobForm.location}`);
+    // Here you would normally send jobForm to your database
   };
 
   const rankedCandidates = [...candidates].sort((a, b) => calculateTotalScore(b.scores) - calculateTotalScore(a.scores));
@@ -64,85 +62,86 @@ const App = () => {
   return (
     <div className="flex flex-col lg:flex-row gap-8 p-8 bg-slate-50 min-h-screen font-sans">
       
-      {/* LEFT PANEL: ADMIN SETTINGS */}
-      <div className="w-full lg:w-[400px] bg-white rounded-3xl shadow-xl border border-slate-100 p-8 h-fit lg:sticky lg:top-8">
-        
-        <div className="flex gap-2 mb-8 bg-slate-100 p-1 rounded-2xl">
-          <button onClick={() => setView('candidates')} className={`flex-1 py-2 px-4 rounded-xl text-xs font-bold transition-all ${view === 'candidates' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500'}`}>Candidates</button>
-          <button onClick={() => setView('job-editor')} className={`flex-1 py-2 px-4 rounded-xl text-xs font-bold transition-all ${view === 'job-editor' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500'}`}>Job Details</button>
-        </div>
-
-        {view === 'candidates' ? (
-          <div className="animate-in fade-in duration-500">
-            <h2 className="text-2xl font-black text-slate-900 mb-2">Job Intelligence</h2>
-            <p className="text-slate-500 mb-10 text-sm">Adjust weights to re-rank the candidate pool.</p>
-            <div className="space-y-10">
-              {skills.map((skill) => (
-                <div key={skill.id}>
-                  <div className="flex justify-between items-end mb-4">
-                    <span className="font-bold text-slate-700">{skill.label}</span>
-                    <span className="text-2xl font-black text-slate-900">{Math.round(skill.value)}%</span>
-                  </div>
-                  <input type="range" min="0" max="100" value={skill.value} onChange={(e) => handleSliderChange(skill.id, parseFloat(e.target.value))} className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-indigo-600" />
+      {/* LEFT: ADMIN SETTINGS & SLIDERS */}
+      <div className="w-full lg:w-[400px] space-y-6">
+        <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-8 h-fit sticky top-8">
+          <h2 className="text-2xl font-black text-slate-900 mb-2">Job Intelligence</h2>
+          <p className="text-slate-500 mb-10 text-sm italic">Rank candidates based on priority.</p>
+          <div className="space-y-12">
+            {skills.map((skill) => (
+              <div key={skill.id}>
+                <div className="flex justify-between items-end mb-4">
+                  <span className="font-bold text-slate-800">{skill.label}</span>
+                  <span className="text-2xl font-black text-slate-900">{Math.round(skill.value)}%</span>
                 </div>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div className="animate-in fade-in duration-500 space-y-6">
-            <h2 className="text-2xl font-black text-slate-900">Google Job Editor</h2>
-            <p className="text-slate-500 text-sm mb-6">Details here are automatically optimized for Google Search.</p>
-            
-            <div>
-              <label className="text-[10px] font-bold text-slate-400 uppercase">Job Title</label>
-              <input type="text" value={jobPosting.title} onChange={e => setJobPosting({...jobPosting, title: e.target.value})} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-indigo-500" />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-[10px] font-bold text-slate-400 uppercase">Min Salary</label>
-                <input type="number" value={jobPosting.salaryMin} onChange={e => setJobPosting({...jobPosting, salaryMin: e.target.value})} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm" />
+                <input type="range" min="0" max="100" value={skill.value} onChange={(e) => handleSliderChange(skill.id, parseFloat(e.target.value))} className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-indigo-600" />
               </div>
-              <div>
-                <label className="text-[10px] font-bold text-slate-400 uppercase">Max Salary</label>
-                <input type="number" value={jobPosting.salaryMax} onChange={e => setJobPosting({...jobPosting, salaryMax: e.target.value})} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm" />
-              </div>
-            </div>
-
-            <button className="w-full bg-slate-900 text-white font-bold py-4 rounded-2xl hover:bg-green-600 transition-all">Publish Update</button>
+            ))}
           </div>
-        )}
+        </div>
       </div>
 
-      {/* RIGHT PANEL: LIVE FEED */}
-      <div className="flex-1 space-y-6">
-        <div className="flex justify-between items-center bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-          <div>
-            <h3 className="text-lg font-bold text-slate-900">{jobPosting.title}</h3>
-            <p className="text-xs text-slate-400 font-medium">📍 {jobPosting.location} • {candidates.length} Applicants</p>
+      {/* RIGHT: JOB POSTER & CANDIDATE LIST */}
+      <div className="flex-1 space-y-8">
+        
+        {/* SECTION: POST A JOB (The Input Area) */}
+        <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-8">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-xl font-black text-slate-900">Post to Google Jobs</h3>
+            <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest animate-pulse">Live Sync Active</span>
           </div>
-          <button onClick={handleShareLink} className={`px-6 py-3 rounded-2xl text-xs font-bold transition-all ${copied ? 'bg-green-600 text-white' : 'bg-indigo-600 text-white shadow-lg shadow-indigo-100 hover:bg-indigo-700'}`}>
-            {copied ? '✓ Link Copied' : '🔗 Share Public Job Page'}
-          </button>
+          
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div>
+                <label className="text-[10px] font-bold text-slate-400 uppercase">Job Title</label>
+                <input type="text" value={jobForm.title} onChange={e => setJobForm({...jobForm, title: e.target.value})} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none" />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-slate-400 uppercase">Location</label>
+                <input type="text" value={jobForm.location} onChange={e => setJobForm({...jobForm, location: e.target.value})} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase">Min Salary</label>
+                  <input type="number" value={jobForm.salaryMin} onChange={e => setJobForm({...jobForm, salaryMin: e.target.value})} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm" />
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase">Max Salary</label>
+                  <input type="number" value={jobForm.salaryMax} onChange={e => setJobForm({...jobForm, salaryMax: e.target.value})} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm" />
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex flex-col h-full">
+              <label className="text-[10px] font-bold text-slate-400 uppercase mb-1">Job Description</label>
+              <textarea value={jobForm.description} onChange={e => setJobForm({...jobForm, description: e.target.value})} className="w-full flex-1 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm min-h-[150px] outline-none" placeholder="Describe the role..."></textarea>
+              <button onClick={handlePublish} className="w-full mt-4 bg-indigo-600 text-white font-bold py-4 rounded-xl hover:bg-slate-900 transition-all shadow-lg">
+                Publish to Google & Share Link
+              </button>
+            </div>
+          </div>
         </div>
 
-        {view === 'candidates' && rankedCandidates.map((c, index) => {
-          const score = calculateTotalScore(c.scores);
-          return (
-            <div key={c.id} onClick={() => setActiveCandidate(activeCandidate === c.id ? null : c.id)} className={`bg-white rounded-3xl border p-6 transition-all cursor-pointer ${activeCandidate === c.id ? 'ring-2 ring-indigo-500' : 'border-slate-100 shadow-sm hover:shadow-md'}`}>
-              <div className="flex justify-between items-center">
+        {/* SECTION: RANKED CANDIDATES */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-bold text-slate-800 px-2">Top Matches for {jobForm.title}</h3>
+          {rankedCandidates.map((c, index) => {
+            const score = calculateTotalScore(c.scores);
+            return (
+              <div key={c.id} className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <span className="w-10 h-10 flex items-center justify-center bg-slate-900 text-white rounded-full font-black text-sm">#{index + 1}</span>
                   <h4 className="text-xl font-bold text-slate-900">{c.name}</h4>
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-black text-indigo-600">{Math.round(score)}%</div>
-                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Match</div>
+                  <div className="text-2xl font-black text-indigo-600 leading-none">{Math.round(score)}% Match</div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
+
       </div>
     </div>
   );
