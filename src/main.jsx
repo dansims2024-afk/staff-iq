@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App.jsx' // <--- Make sure this points to App, not a component
+import App from './App.jsx' // <--- This forces it to look at your new file
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
