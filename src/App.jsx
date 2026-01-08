@@ -45,7 +45,7 @@ const App = () => {
     <div className="flex min-h-screen bg-[#F8FAFC] font-sans text-slate-900">
       
       {/* --- SIDEBAR --- */}
-      <div className="w-64 bg-[#0F172A] text-white p-6 flex flex-col fixed h-full">
+      <div className="w-64 bg-[#0F172A] text-white p-6 flex flex-col fixed h-full z-10">
         <div className="mb-10 px-2">
           <span className="text-2xl font-black tracking-tighter italic">STAFF <span className="text-indigo-500">IQ</span></span>
         </div>
@@ -59,7 +59,7 @@ const App = () => {
             Active Pipeline
           </button>
           
-          {/* TAB 2: POST A JOB (THIS WAS MISSING) */}
+          {/* TAB 2: POST A JOB (THIS IS THE NEW BUTTON) */}
           <button 
             onClick={() => setActiveTab('post-job')}
             className={`w-full text-left px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'post-job' ? 'bg-[#1F2937] text-white shadow-lg border-l-4 border-indigo-500' : 'text-slate-400 hover:bg-slate-800'}`}
@@ -88,33 +88,51 @@ const App = () => {
       {/* --- MAIN CONTENT AREA --- */}
       <div className="flex-1 ml-64 p-12">
         
-        {/* VIEW 1: ACTIVE PIPELINE (Matches Screenshot 1) */}
+        {/* VIEW 1: ACTIVE PIPELINE */}
         {activeTab === 'pipeline' && (
-          <div className="max-w-4xl animate-in fade-in duration-300">
-            <h1 className="text-3xl font-black text-slate-900 mb-2">Active Pipeline</h1>
-            <p className="text-slate-500 mb-8 font-medium">Ranking candidates by Job Intelligence Score</p>
+          <div className="max-w-5xl animate-in fade-in duration-300">
+            <div className="flex justify-between items-center mb-8">
+              <div>
+                <h1 className="text-3xl font-black text-slate-900 mb-2">Active Pipeline</h1>
+                <p className="text-slate-500 font-medium">Ranking candidates by Job Intelligence Score</p>
+              </div>
+              {/* Extra 'Create Job' button here just in case */}
+              <button onClick={() => setActiveTab('post-job')} className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-indigo-200 transition-all">
+                + Create New Job
+              </button>
+            </div>
             
             <div className="space-y-4">
+               {/* Candidate Card 1 */}
                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
                   <div className="flex items-center gap-6">
-                    <div className="w-14 h-14 rounded-full border-4 border-green-500 flex items-center justify-center font-black text-green-600 text-xl">89</div>
+                    <div className="w-16 h-16 rounded-full border-4 border-green-500 flex items-center justify-center font-black text-green-600 text-2xl">89</div>
                     <div>
-                      <h4 className="text-lg font-bold">Alex Rivera</h4>
+                      <h4 className="text-xl font-bold text-slate-900">Alex Rivera</h4>
                       <p className="text-sm text-slate-400 font-medium">Senior Store Manager • Applied 2h ago</p>
                     </div>
                   </div>
-                  <button className="bg-indigo-600 text-white px-6 py-2.5 rounded-xl font-bold shadow-md hover:bg-indigo-700">View Profile</button>
+                  <div className="flex gap-2">
+                    <button className="p-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-400">💬</button>
+                    <button className="p-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-400">✉️</button>
+                    <button className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold shadow-md hover:bg-indigo-700">View Profile</button>
+                  </div>
                </div>
 
+               {/* Candidate Card 2 */}
                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
                   <div className="flex items-center gap-6">
-                    <div className="w-14 h-14 rounded-full border-4 border-green-500 flex items-center justify-center font-black text-green-600 text-xl">87</div>
+                    <div className="w-16 h-16 rounded-full border-4 border-green-500 flex items-center justify-center font-black text-green-600 text-2xl">87</div>
                     <div>
-                      <h4 className="text-lg font-bold">Sarah Chen</h4>
+                      <h4 className="text-xl font-bold text-slate-900">Sarah Chen</h4>
                       <p className="text-sm text-slate-400 font-medium">Sales Lead • Applied 5h ago</p>
                     </div>
                   </div>
-                  <button className="bg-indigo-600 text-white px-6 py-2.5 rounded-xl font-bold shadow-md hover:bg-indigo-700">View Profile</button>
+                   <div className="flex gap-2">
+                    <button className="p-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-400">💬</button>
+                    <button className="p-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-400">✉️</button>
+                    <button className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold shadow-md hover:bg-indigo-700">View Profile</button>
+                  </div>
                </div>
             </div>
           </div>
