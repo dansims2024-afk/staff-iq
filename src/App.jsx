@@ -7,150 +7,111 @@ export default function App() {
   const [description, setDescription] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
 
-  // --- AI GENERATION LOGIC ---
+  // --- AI LOGIC (USES GLOBAL SCRIPT FROM INDEX.HTML) ---
   const generateDescription = async () => {
     if (!title) return alert("Please enter a Job Title first!");
     
-    // Checks if the script we added to index.html is loaded
-    if (!window.google || !window.google.generativeAi) {
-      return alert("AI Library is still loading. Please wait a moment or check your index.html script tag.");
+    // Checks the global window object for the script we added to index.html
+    const googleAI = window.google?.generativeAi;
+    if (!googleAI) {
+      return alert("AI Library is still loading. Please check index.html for the script tag.");
     }
 
     setIsGenerating(true);
     try {
-      // Accessing the global library loaded via CDN
-      const genAI = new window.google.generativeAi.GoogleGenerativeAI("YOUR_API_KEY_HERE");
+      const genAI = new googleAI.GoogleGenerativeAI("YOUR_API_KEY_HERE");
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
       
-      const prompt = `Write a professional 3-paragraph job description for a ${title}.`;
+      const prompt = `Write a short professional job description for a ${title}.`;
       const result = await model.generateContent(prompt);
-      const response = await result.response;
-      setDescription(response.text());
+      const text = result.response.text();
+      setDescription(text);
     } catch (error) {
-      console.error("Gemini Error:", error);
-      alert("AI failed to respond. Make sure you have a valid API Key.");
+      console.error("AI Error:", error);
+      alert("AI failed to load. Check your API key.");
     } finally {
       setIsGenerating(false);
     }
   };
 
+  // Sidebar Menu Items
   const menuItems = [
     { id: 'Dashboard', icon: '📊', label: 'Dashboard' },
     { id: 'Post a Job', icon: '🚀', label: 'Post a Job' },
     { id: 'Candidates', icon: '👥', label: 'Candidates' },
-    { id: 'Analytics', icon: '📈', label: 'Analytics' },
-    { id: 'Settings', icon: '⚙️', label: 'Settings' },
+    { id: 'Analytics', icon: '📈', label: 'Analytics' }
   ];
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8fafc', color: '#0f172a', fontFamily: 'sans-serif' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8fafc', fontFamily: 'sans-serif' }}>
+      
       {/* SIDEBAR */}
-      <aside style={{ width: '256px', backgroundColor: '#0f172a', color: 'white', display: 'flex', flexDirection: 'column', padding: '24px', position: 'fixed', height: '100%' }}>
-        <h1 style={{ fontSize: '20px', fontWeight: '900', fontStyle: 'italic', textTransform: 'uppercase', marginBottom: '48px' }}>Staff IQ</h1>
-        
-        <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+      <nav style={{ width: '240px', backgroundColor: '#0f172a', color: 'white', padding: '20px', position: 'fixed', height: '100%' }}>
+        <h1 style={{ fontStyle: 'italic', fontWeight: '900', marginBottom: '40px' }}>STAFF IQ</h1>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {menuItems.map((item) => (
-            <button
+            <button 
               key={item.id}
               onClick={() => setActiveTab(item.id)}
               style={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                padding: '12px 16px',
-                borderRadius: '12px',
-                fontSize: '14px',
-                fontWeight: 'bold',
-                border: 'none',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
+                textAlign: 'left', padding: '12px', borderRadius: '8px', border: 'none', cursor: 'pointer',
                 backgroundColor: activeTab === item.id ? '#4f46e5' : 'transparent',
                 color: activeTab === item.id ? 'white' : '#94a3b8',
-                textAlign: 'left'
+                fontWeight: 'bold'
               }}
             >
-              <span>{item.icon}</span>
-              {item.label}
+              {item.icon} {item.label}
             </button>
           ))}
-        </nav>
-      </aside>
+        </div>
+      </nav>
 
-      {/* MAIN CONTENT */}
-      <main style={{ flex: 1, marginLeft: '256px', minHeight: '100vh' }}>
-        <header style={{ padding: '32px 32px 16px 32px' }}>
-          <h2 style={{ fontSize: '30px', fontWeight: '900', fontStyle: 'italic' }}>{activeTab}</h2>
-        </header>
+      {/* CONTENT */}
+      <main style={{ flex: 1, marginLeft: '240px', padding: '40px' }}>
+        <h2 style={{ fontSize: '28px', fontWeight: '900', fontStyle: 'italic', marginBottom: '30px' }}>{activeTab}</h2>
 
-        <section style={{ maxWidth: '1152px', padding: '32px' }}>
-          {activeTab === 'Dashboard' && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px' }}>
-               <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '16px', border: '1px solid #f1f5f9', boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)' }}>
-                <p style={{ color: '#64748b', fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', marginBottom: '4px' }}>Active Roles</p>
-                <p style={{ fontSize: '30px', fontWeight: '900' }}>12</p>
+        {activeTab === 'Dashboard' && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
+            {['Active Roles', 'Candidates', 'Interviews'].map((label) => (
+              <div key={label} style={{ background: 'white', padding: '20px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                <p style={{ color: '#64748b', fontSize: '12px', fontWeight: 'bold' }}>{label}</p>
+                <p style={{ fontSize: '24px', fontWeight: 'bold' }}>{label === 'Candidates' ? '458' : '12'}</p>
               </div>
-              <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '16px', border: '1px solid #f1f5f9', boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)' }}>
-                <p style={{ color: '#64748b', fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', marginBottom: '4px' }}>Candidates</p>
-                <p style={{ fontSize: '30px', fontWeight: '900' }}>458</p>
-              </div>
-              <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '16px', border: '1px solid #f1f5f9', boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)' }}>
-                <p style={{ color: '#64748b', fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', marginBottom: '4px' }}>Interviews</p>
-                <p style={{ fontSize: '30px', fontWeight: '900' }}>5</p>
-              </div>
+            ))}
+          </div>
+        )}
+
+        {activeTab === 'Post a Job' && (
+          <div style={{ background: 'white', padding: '30px', borderRadius: '20px', border: '1px solid #e2e8f0', maxWidth: '800px' }}>
+            <div style={{ display: 'flex', gap: '15px', marginBottom: '20px' }}>
+              <input 
+                placeholder="Job Title" 
+                value={title} 
+                onChange={(e) => setTitle(e.target.value)}
+                style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0' }} 
+              />
+              <input defaultValue="55000" style={{ width: '100px', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0', textAlign: 'center' }} />
             </div>
-          )}
-
-          {activeTab === 'Post a Job' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-              <div style={{ backgroundColor: 'white', padding: '32px', borderRadius: '24px', border: '1px solid #f1f5f9', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}>
-                <div style={{ display: 'flex', gap: '16px', marginBottom: '32px' }}>
-                  <div style={{ flex: 1 }}>
-                    <label style={{ fontSize: '10px', fontWeight: 'bold', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '4px', display: 'block' }}>Job Title</label>
-                    <input 
-                      value={title} 
-                      onChange={(e) => setTitle(e.target.value)}
-                      style={{ width: '100%', padding: '16px', backgroundColor: '#f8fafc', borderRadius: '12px', border: 'none', outline: 'none' }} 
-                      placeholder="e.g. Senior Software Engineer"
-                    />
-                  </div>
-                  <div style={{ width: '128px' }}>
-                    <label style={{ fontSize: '10px', fontWeight: 'bold', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '4px', display: 'block' }}>Salary</label>
-                    <input defaultValue="55000" style={{ width: '100%', padding: '16px', backgroundColor: '#f8fafc', borderRadius: '12px', border: 'none', textAlign: 'center' }} />
-                  </div>
-                </div>
-
-                <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <label style={{ fontSize: '10px', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase' }}>Description</label>
-                  <button 
-                    onClick={generateDescription}
-                    disabled={isGenerating}
-                    style={{ background: 'none', border: 'none', color: '#4f46e5', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' }}
-                  >
-                    {isGenerating ? '⌛ Generating...' : '✨ Generate with Gemini'}
-                  </button>
-                </div>
-                
-                <textarea 
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Click 'Generate' to create a description..." 
-                  style={{ width: '100%', height: '320px', padding: '24px', backgroundColor: '#f8fafc', borderRadius: '16px', border: 'none', marginBottom: '24px', outline: 'none', resize: 'none', lineHeight: '1.6' }}
-                />
-
-                <button style={{ width: '100%', padding: '20px', backgroundColor: '#0f172a', color: 'white', borderRadius: '16px', fontWeight: '900', fontSize: '18px', border: 'none', cursor: 'pointer' }}>
-                  Publish Requisition 🚀
-                </button>
-              </div>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+              <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#94a3b8' }}>DESCRIPTION</span>
+              <button onClick={generateDescription} style={{ background: 'none', border: 'none', color: '#4f46e5', fontWeight: 'bold', cursor: 'pointer' }}>
+                {isGenerating ? '⌛ Generating...' : '✨ Generate with Gemini'}
+              </button>
             </div>
-          )}
 
-          {['Candidates', 'Analytics', 'Settings'].includes(activeTab) && (
-            <div style={{ padding: '48px', textAlign: 'center', color: '#94a3b8', border: '2px dashed #e2e8f0', borderRadius: '24px' }}>
-              <p style={{ fontStyle: 'italic' }}>The {activeTab} module is coming soon.</p>
-            </div>
-          )}
-        </section>
+            <textarea 
+              value={description} 
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Click Generate..."
+              style={{ width: '100%', height: '200px', padding: '15px', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px' }}
+            />
+
+            <button style={{ width: '100%', padding: '15px', backgroundColor: '#0f172a', color: 'white', borderRadius: '12px', fontWeight: 'bold', border: 'none' }}>
+              Publish Requisition 🚀
+            </button>
+          </div>
+        )}
       </main>
     </div>
   );
