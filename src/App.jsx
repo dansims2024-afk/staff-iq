@@ -7,11 +7,10 @@ export default function App() {
   const [description, setDescription] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
 
-  // --- REUSABLE SAMPLE DATA ---
+  // --- SAMPLE DATA ---
   const jobs = [
-    { id: 101, title: "Senior Software Engineer", dept: "Engineering", location: "Remote", applicants: 42, status: "Active" },
-    { id: 102, title: "Product Designer", dept: "Design", location: "New York", applicants: 18, status: "Active" },
-    { id: 103, title: "Marketing Manager", dept: "Growth", location: "London", applicants: 25, status: "Paused" },
+    { id: 101, title: "Senior Software Engineer", dept: "Engineering", location: "Remote", applicants: 42 },
+    { id: 102, title: "Product Designer", dept: "Design", location: "New York", applicants: 18 },
   ];
 
   const candidates = [
@@ -41,12 +40,10 @@ export default function App() {
   return (
     <div className="flex min-h-screen bg-[#F8FAFC] text-[#0F172A] font-sans">
       
-      {/* SIDEBAR: LOGO UPDATED FROM PIC */}
+      {/* SIDEBAR WITH YOUR UPLOADED LOGO */}
       <nav className="w-64 bg-[#0F172A] text-white p-6 fixed h-full flex flex-col shadow-2xl z-20">
         <div className="mb-12 flex items-center gap-3">
-           <div className="w-8 h-8 rounded-full border-2 border-indigo-500 flex items-center justify-center">
-              <span className="text-indigo-400 text-lg">✦</span>
-           </div>
+           <img src="/logo.png" alt="Staff IQ" className="w-10 h-10 object-contain rounded-lg shadow-inner" />
            <h1 className="text-xl font-black italic tracking-tighter uppercase">STAFF IQ</h1>
         </div>
         
@@ -69,28 +66,28 @@ export default function App() {
       <main className="flex-1 ml-64 p-10 bg-[#F8FAFC]">
         <header className="mb-10 flex justify-between items-end border-b border-slate-200 pb-6">
           <h2 className="text-4xl font-black italic tracking-tight">{activeTab}</h2>
-          <div className="text-sm font-bold text-slate-400 uppercase tracking-widest">Jan 2026</div>
+          <div className="text-sm font-bold text-slate-400 uppercase tracking-widest italic">JAN 2026</div>
         </header>
 
-        {/* 1. DASHBOARD VIEW */}
+        {/* DASHBOARD VIEW */}
         {activeTab === 'Dashboard' && (
           <div className="grid grid-cols-3 gap-6 animate-in fade-in duration-500">
             <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
-              <p className="text-slate-400 text-[10px] font-black uppercase mb-1">Active Roles</p>
-              <p className="text-4xl font-black text-indigo-600">12</p>
+              <p className="text-slate-400 text-[10px] font-black uppercase mb-1">Live Roles</p>
+              <p className="text-4xl font-black text-indigo-600">{jobs.length}</p>
             </div>
             <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
-              <p className="text-slate-400 text-[10px] font-black uppercase mb-1">Total Candidates</p>
+              <p className="text-slate-400 text-[10px] font-black uppercase mb-1">Applicants</p>
               <p className="text-4xl font-black text-emerald-500">458</p>
             </div>
             <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
-              <p className="text-slate-400 text-[10px] font-black uppercase mb-1">Interviews Scheduled</p>
+              <p className="text-slate-400 text-[10px] font-black uppercase mb-1">Interviews</p>
               <p className="text-4xl font-black text-amber-500">12</p>
             </div>
           </div>
         )}
 
-        {/* 2. JOBS VIEW WITH SMART TRACKING */}
+        {/* JOBS VIEW WITH SMART TRACKING */}
         {activeTab === 'Jobs' && (
           <div className="space-y-6 animate-in fade-in duration-500">
             {jobs.map(job => (
@@ -102,7 +99,7 @@ export default function App() {
                   </div>
                   <button 
                     onClick={() => setSelectedJob(selectedJob?.id === job.id ? null : job)}
-                    className="bg-indigo-600 text-white px-6 py-2 rounded-xl text-xs font-black shadow-lg"
+                    className="bg-indigo-600 text-white px-6 py-2 rounded-xl text-xs font-black shadow-lg shadow-indigo-200"
                   >
                     Share & Track 🔗
                   </button>
@@ -115,7 +112,7 @@ export default function App() {
                         <div key={src} className="flex items-center gap-3 bg-white p-3 rounded-xl border border-slate-200">
                           <span className="text-[10px] font-black w-16">{src}</span>
                           <input readOnly value={`https://staffiq.app/apply/${job.id}?source=${src.toLowerCase()}`} className="flex-1 text-[10px] font-mono text-slate-500 bg-transparent border-none outline-none" />
-                          <button className="text-[10px] font-black text-indigo-600">COPY</button>
+                          <button className="text-[10px] font-black text-indigo-600 hover:text-indigo-800" onClick={() => {navigator.clipboard.writeText(`https://staffiq.app/apply/${job.id}?source=${src.toLowerCase()}`); alert('Link Copied!')}}>COPY</button>
                         </div>
                       ))}
                     </div>
@@ -126,27 +123,27 @@ export default function App() {
           </div>
         )}
 
-        {/* 3. POST A JOB VIEW */}
+        {/* POST A JOB VIEW */}
         {activeTab === 'Post a Job' && (
           <div className="flex gap-8 animate-in slide-in-from-bottom-4 duration-500">
             <div className="flex-1 bg-white p-10 rounded-3xl shadow-xl border border-slate-100">
               <div className="grid grid-cols-2 gap-6 mb-8">
-                <input value={title} onChange={(e) => setTitle(e.target.value)} className="p-4 bg-slate-50 rounded-2xl border-none font-bold" placeholder="Job Title" />
-                <input defaultValue="55,000" className="p-4 bg-slate-50 rounded-2xl border-none font-bold text-center" />
+                <input value={title} onChange={(e) => setTitle(e.target.value)} className="p-4 bg-slate-50 rounded-2xl border-none font-bold outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Job Title" />
+                <input defaultValue="120,000 - 150,000" className="p-4 bg-slate-50 rounded-2xl border-none font-bold text-center" />
               </div>
               <div className="flex justify-between mb-2">
-                 <span className="text-[10px] font-black text-slate-400 uppercase">Description</span>
-                 <button onClick={generateWithGemini} disabled={isGenerating} className="text-indigo-600 font-black text-xs">
+                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Job Description</span>
+                 <button onClick={generateWithGemini} disabled={isGenerating} className="text-indigo-600 font-black text-xs hover:underline">
                     {isGenerating ? "⌛ AI writing..." : "✨ Generate with Gemini"}
                  </button>
               </div>
               <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="w-full h-80 p-6 bg-slate-50 rounded-3xl border-none mb-8 text-sm leading-relaxed" placeholder="Click 'Generate' to see magic..." />
-              <button className="w-full py-5 bg-[#0F172A] text-white rounded-2xl font-black text-lg hover:bg-indigo-600 transition-all">Publish Job 🚀</button>
+              <button className="w-full py-5 bg-[#0F172A] text-white rounded-2xl font-black text-lg hover:bg-indigo-600 transition-all shadow-xl shadow-slate-200">Publish Job 🚀</button>
             </div>
           </div>
         )}
 
-        {/* 4. CANDIDATES TABLE */}
+        {/* CANDIDATES TABLE */}
         {activeTab === 'Candidates' && (
           <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden animate-in fade-in">
             <table className="w-full text-left">
@@ -155,7 +152,7 @@ export default function App() {
                   <th className="p-6">Name</th>
                   <th className="p-6">Role</th>
                   <th className="p-6">Source</th>
-                  <th className="p-6">AI Score</th>
+                  <th className="p-6">AI Fit Score</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -163,7 +160,7 @@ export default function App() {
                   <tr key={c.id} className="hover:bg-slate-50 transition-colors">
                     <td className="p-6 font-bold">{c.name}</td>
                     <td className="p-6 text-sm text-slate-500">{c.role}</td>
-                    <td className="p-6"><span className="px-2 py-1 bg-indigo-50 text-indigo-600 rounded-lg text-[10px] font-black">{c.source}</span></td>
+                    <td className="p-6"><span className="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-lg text-[10px] font-black uppercase tracking-tighter">{c.source}</span></td>
                     <td className="p-6 font-mono font-bold text-indigo-600">{c.score}</td>
                   </tr>
                 ))}
@@ -172,13 +169,13 @@ export default function App() {
           </div>
         )}
 
-        {/* 5. ANALYTICS VIEW */}
+        {/* ANALYTICS VIEW */}
         {activeTab === 'Analytics' && (
           <div className="grid grid-cols-2 gap-8 animate-in fade-in">
              <div className="bg-white p-10 rounded-3xl border border-slate-100 shadow-sm text-center">
-                <h4 className="text-[10px] font-black text-slate-400 uppercase mb-8">Match Rate</h4>
-                <div className="w-40 h-40 rounded-full border-[12px] border-indigo-500 mx-auto flex items-center justify-center">
-                   <p className="text-3xl font-black italic">82%</p>
+                <h4 className="text-[10px] font-black text-slate-400 uppercase mb-8">Overall Match Rate</h4>
+                <div className="w-48 h-48 rounded-full border-[12px] border-indigo-500 mx-auto flex items-center justify-center shadow-lg shadow-indigo-100">
+                   <p className="text-4xl font-black italic tracking-tighter">82%</p>
                 </div>
              </div>
              <div className="bg-white p-10 rounded-3xl border border-slate-100 shadow-sm">
@@ -186,8 +183,8 @@ export default function App() {
                 <div className="space-y-6">
                    {['LinkedIn', 'Indeed', 'Referrals'].map((s, i) => (
                      <div key={s} className="space-y-2">
-                        <div className="flex justify-between text-[10px] font-black uppercase"><span>{s}</span><span>{90 - (i*20)}%</span></div>
-                        <div className="h-2 bg-slate-100 rounded-full"><div className="h-full bg-indigo-500 rounded-full" style={{width: `${90-(i*20)}%`}}></div></div>
+                        <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-500"><span>{s}</span><span>{90 - (i*20)}%</span></div>
+                        <div className="h-2.5 bg-slate-100 rounded-full"><div className="h-full bg-indigo-500 rounded-full transition-all duration-1000" style={{width: `${90-(i*20)}%`}}></div></div>
                      </div>
                    ))}
                 </div>
