@@ -33,18 +33,26 @@ export default function App() {
       const result = await model.generateContent(prompt);
       setDescription(result.response.text());
     } catch (e) {
-      alert("AI Error: Check your API Key in the code.");
+      alert("AI Error: Check your API Key.");
     } finally { setIsGenerating(false); }
   };
 
   return (
     <div className="flex min-h-screen bg-[#F8FAFC] text-[#0F172A] font-sans">
       
-      {/* SIDEBAR WITH YOUR UPLOADED LOGO */}
+      {/* SIDEBAR WITH UPDATED BRANDING */}
       <nav className="w-64 bg-[#0F172A] text-white p-6 fixed h-full flex flex-col shadow-2xl z-20">
-        <div className="mb-12 flex items-center gap-3">
-           <img src="/logo.png" alt="Staff IQ" className="w-10 h-10 object-contain rounded-lg shadow-inner" />
-           <h1 className="text-xl font-black italic tracking-tighter uppercase">STAFF IQ</h1>
+        <div className="mb-12">
+          <div className="flex items-center gap-3 mb-1">
+             <img src="/logo.png" alt="Staff-IQ Logo" className="w-8 h-8 object-contain" />
+             {/* Matching font: Heavy, Italicized, Tight spacing */}
+             <h1 className="text-2xl font-[900] italic tracking-tighter uppercase leading-none">
+               Staff-IQ
+             </h1>
+          </div>
+          <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest ml-11 leading-none">
+            Elite Candidate Screening
+          </p>
         </div>
         
         <div className="flex flex-col gap-2 flex-1">
@@ -53,7 +61,7 @@ export default function App() {
               key={tab}
               onClick={() => { setActiveTab(tab); setSelectedJob(null); }}
               className={`text-left p-3 px-5 rounded-xl font-bold transition-all flex items-center gap-3 ${
-                activeTab === tab ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-slate-400 hover:bg-slate-800'
+                activeTab === tab ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:bg-slate-800'
               }`}
             >
               {tab}
@@ -65,7 +73,9 @@ export default function App() {
       {/* MAIN CONTENT AREA */}
       <main className="flex-1 ml-64 p-10 bg-[#F8FAFC]">
         <header className="mb-10 flex justify-between items-end border-b border-slate-200 pb-6">
-          <h2 className="text-4xl font-black italic tracking-tight">{activeTab}</h2>
+          <h2 className="text-4xl font-[900] italic tracking-tight uppercase">
+            {activeTab}
+          </h2>
           <div className="text-sm font-bold text-slate-400 uppercase tracking-widest italic">JAN 2026</div>
         </header>
 
@@ -74,32 +84,32 @@ export default function App() {
           <div className="grid grid-cols-3 gap-6 animate-in fade-in duration-500">
             <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
               <p className="text-slate-400 text-[10px] font-black uppercase mb-1">Live Roles</p>
-              <p className="text-4xl font-black text-indigo-600">{jobs.length}</p>
+              <p className="text-4xl font-[900] italic">{jobs.length}</p>
             </div>
             <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
               <p className="text-slate-400 text-[10px] font-black uppercase mb-1">Applicants</p>
-              <p className="text-4xl font-black text-emerald-500">458</p>
+              <p className="text-4xl font-[900] italic">458</p>
             </div>
             <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
               <p className="text-slate-400 text-[10px] font-black uppercase mb-1">Interviews</p>
-              <p className="text-4xl font-black text-amber-500">12</p>
+              <p className="text-4xl font-[900] italic">12</p>
             </div>
           </div>
         )}
 
-        {/* JOBS VIEW WITH SMART TRACKING */}
+        {/* JOBS VIEW */}
         {activeTab === 'Jobs' && (
           <div className="space-y-6 animate-in fade-in duration-500">
             {jobs.map(job => (
               <div key={job.id} className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm transition-all hover:shadow-md">
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h4 className="text-2xl font-black">{job.title}</h4>
+                    <h4 className="text-2xl font-[900] italic uppercase">{job.title}</h4>
                     <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">{job.dept} • {job.location}</p>
                   </div>
                   <button 
                     onClick={() => setSelectedJob(selectedJob?.id === job.id ? null : job)}
-                    className="bg-indigo-600 text-white px-6 py-2 rounded-xl text-xs font-black shadow-lg shadow-indigo-200"
+                    className="bg-indigo-600 text-white px-6 py-2 rounded-xl text-xs font-black shadow-lg"
                   >
                     Share & Track 🔗
                   </button>
@@ -111,8 +121,8 @@ export default function App() {
                       {['LinkedIn', 'Indeed'].map(src => (
                         <div key={src} className="flex items-center gap-3 bg-white p-3 rounded-xl border border-slate-200">
                           <span className="text-[10px] font-black w-16">{src}</span>
-                          <input readOnly value={`https://staffiq.app/apply/${job.id}?source=${src.toLowerCase()}`} className="flex-1 text-[10px] font-mono text-slate-500 bg-transparent border-none outline-none" />
-                          <button className="text-[10px] font-black text-indigo-600 hover:text-indigo-800" onClick={() => {navigator.clipboard.writeText(`https://staffiq.app/apply/${job.id}?source=${src.toLowerCase()}`); alert('Link Copied!')}}>COPY</button>
+                          <input readOnly value={`https://staff-iq.app/apply/${job.id}?source=${src.toLowerCase()}`} className="flex-1 text-[10px] font-mono text-slate-500 bg-transparent border-none outline-none" />
+                          <button className="text-[10px] font-black text-indigo-600" onClick={() => alert('Link Copied!')}>COPY</button>
                         </div>
                       ))}
                     </div>
@@ -138,7 +148,7 @@ export default function App() {
                  </button>
               </div>
               <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="w-full h-80 p-6 bg-slate-50 rounded-3xl border-none mb-8 text-sm leading-relaxed" placeholder="Click 'Generate' to see magic..." />
-              <button className="w-full py-5 bg-[#0F172A] text-white rounded-2xl font-black text-lg hover:bg-indigo-600 transition-all shadow-xl shadow-slate-200">Publish Job 🚀</button>
+              <button className="w-full py-5 bg-[#0F172A] text-white rounded-2xl font-black text-lg hover:bg-indigo-600 transition-all">Publish Job 🚀</button>
             </div>
           </div>
         )}
@@ -173,9 +183,9 @@ export default function App() {
         {activeTab === 'Analytics' && (
           <div className="grid grid-cols-2 gap-8 animate-in fade-in">
              <div className="bg-white p-10 rounded-3xl border border-slate-100 shadow-sm text-center">
-                <h4 className="text-[10px] font-black text-slate-400 uppercase mb-8">Overall Match Rate</h4>
-                <div className="w-48 h-48 rounded-full border-[12px] border-indigo-500 mx-auto flex items-center justify-center shadow-lg shadow-indigo-100">
-                   <p className="text-4xl font-black italic tracking-tighter">82%</p>
+                <h4 className="text-[10px] font-black text-slate-400 uppercase mb-8">Match Rate</h4>
+                <div className="w-48 h-48 rounded-full border-[12px] border-indigo-500 mx-auto flex items-center justify-center">
+                   <p className="text-4xl font-[900] italic">82%</p>
                 </div>
              </div>
              <div className="bg-white p-10 rounded-3xl border border-slate-100 shadow-sm">
@@ -184,7 +194,7 @@ export default function App() {
                    {['LinkedIn', 'Indeed', 'Referrals'].map((s, i) => (
                      <div key={s} className="space-y-2">
                         <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-500"><span>{s}</span><span>{90 - (i*20)}%</span></div>
-                        <div className="h-2.5 bg-slate-100 rounded-full"><div className="h-full bg-indigo-500 rounded-full transition-all duration-1000" style={{width: `${90-(i*20)}%`}}></div></div>
+                        <div className="h-2.5 bg-slate-100 rounded-full"><div className="h-full bg-indigo-500 rounded-full" style={{width: `${90-(i*20)}%`}}></div></div>
                      </div>
                    ))}
                 </div>
