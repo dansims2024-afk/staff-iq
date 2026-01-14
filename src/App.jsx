@@ -37,13 +37,30 @@ export default function App() {
 
   // --- 3. CORE LOGIC FUNCTIONS ---
 
-  // Overhauled Strategic JD Generator
+  // Overhauled Strategic JD Generator for Professional Results
   const generateStrategicAI = () => {
     if (!title) return alert("Please enter a Job Title.");
     setIsGenerating(true);
     setTimeout(() => {
-      const eliteJD = `# ${title.toUpperCase()} MISSION\n\n## THE IMPACT\nWe are looking for a catalyst. As our ${title}, you will ensure that our high-velocity environment remains organized, efficient, and infinitely scalable.\n\n## 90-DAY SUCCESS METRICS\n* **Optimization:** Audit and improve at least 3 core workflows.\n* **Execution:** Maintain a 100% accuracy rate on mission-critical tasks.\n\n## THE ARCHETYPE\n* **High-Velocity Execution:** You anticipate needs before they arise.\n* **Strategic Mindset:** You solve problems at the root.`;
-      setDescription(eliteJD);
+      const proJD = `# ${title.toUpperCase()} MISSION
+
+## THE IMPACT
+Join Staff-IQ, the platform redefining recruitment. As our ${title}, you will ensure our high-velocity environment remains organized, efficient, and infinitely scalable.
+
+## 90-DAY SUCCESS METRICS
+* **Optimization:** Audit and improve at least 3 core workflows within your first quarter.
+* **Execution:** Maintain a 100% accuracy rate on high-priority mission-critical tasks.
+
+## THE ARCHETYPE
+* **High-Velocity Execution:** You anticipate needs before they arise.
+* **Strategic Mindset:** You solve problems at the root, not the symptom.
+* **Elite Communication:** You translate complexity into clarity for all stakeholders.
+
+## PERKS & LOGISTICS
+* **Remote-First:** Work from anywhere with a high-speed node.
+* **Equity:** Own a piece of the platform you are building.`;
+      
+      setDescription(proJD);
       setIsGenerating(false);
     }, 1500);
   };
@@ -54,7 +71,7 @@ export default function App() {
   };
 
   const handleFinalPublish = () => {
-    if (!description) return alert("Generate content before publishing.");
+    if (!description) return alert("Please generate content before publishing.");
     setIsPublishing(true);
     setTimeout(() => {
       const newJob = { id: Date.now(), title, dept: "New Role", location: "Remote", applicants: 0, status: "Active", description };
@@ -109,7 +126,7 @@ export default function App() {
                 <p className="text-4xl font-[900] italic text-indigo-600 leading-none mt-2">{jobs.length}</p>
               </div>
               <div className="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm">
-                <p className="text-slate-400 text-[10px] font-black uppercase mb-1 tracking-widest leading-none">Money Saved</p>
+                <p className="text-slate-400 text-[10px] font-black uppercase mb-1 tracking-widest leading-none">Ad Spend Savings</p>
                 <p className="text-4xl font-[900] italic text-emerald-500 leading-none mt-2">$14.2k</p>
               </div>
             </div>
@@ -147,7 +164,7 @@ export default function App() {
           </div>
         )}
 
-        {/* 3. POST A JOB (REFINED WORKFLOW) */}
+        {/* 3. POST A JOB (STRATEGIC WORKFLOW) */}
         {activeTab === 'Post a Job' && (
           <div className="max-w-5xl space-y-8 animate-in slide-in-from-bottom-4">
             <div className="bg-white p-10 rounded-[40px] shadow-xl border border-slate-100">
@@ -163,7 +180,7 @@ export default function App() {
                     <span className="w-2 h-2 bg-indigo-600 rounded-full animate-pulse"></span>
                     <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest italic">Strategic Content Builder</span>
                  </div>
-                 <button onClick={generateStrategicAI} disabled={isGenerating} className="bg-indigo-600 text-white px-8 py-3 rounded-full font-[900] italic text-xs uppercase tracking-tighter hover:bg-indigo-700">
+                 <button onClick={generateStrategicAI} disabled={isGenerating} className="bg-indigo-600 text-white px-8 py-3 rounded-full font-[900] italic text-xs uppercase tracking-tighter hover:bg-indigo-700 transition-all">
                     {isGenerating ? "Consulting AI..." : "✨ Generate Strategic JD"}
                  </button>
               </div>
@@ -175,6 +192,7 @@ export default function App() {
                 placeholder="The AI will architect your strategic mission here..." 
               />
 
+              {/* ACTION BUTTONS AT BOTTOM */}
               <div className="grid grid-cols-2 gap-6 border-t border-slate-100 pt-10">
                   <button 
                     onClick={handleFinalPublish} 
@@ -183,7 +201,7 @@ export default function App() {
                   >
                       {isPublished ? "✓ LIVE ON GOOGLE JOBS" : isPublishing ? "INDEXING ON GOOGLE..." : "PUBLISH TO GOOGLE JOBS"}
                   </button>
-                  <button onClick={() => setShowFeedGuide(true)} className="py-6 bg-white border-4 border-indigo-600 text-indigo-600 rounded-2xl font-[900] italic uppercase text-sm tracking-widest hover:bg-indigo-50">
+                  <button onClick={() => setShowFeedGuide(true)} className="py-6 bg-white border-4 border-indigo-600 text-indigo-600 rounded-2xl font-[900] italic uppercase text-sm tracking-widest hover:bg-indigo-50 transition-all">
                       XML FEED SYNC
                   </button>
               </div>
@@ -199,7 +217,7 @@ export default function App() {
           </div>
         )}
 
-        {/* 4. CANDIDATES (AI INTEL) */}
+        {/* 4. CANDIDATES VIEW */}
         {activeTab === 'Candidates' && (
           <div className="bg-white rounded-[32px] shadow-sm border border-slate-100 overflow-hidden animate-in fade-in">
             <table className="w-full text-left">
@@ -220,7 +238,7 @@ export default function App() {
                     <td className="p-8 text-center">
                         <span className="text-3xl font-[900] italic text-indigo-600 tracking-tighter leading-none">{c.score}</span>
                     </td>
-                    <td className="p-8">
+                    <td className="p-8 text-right">
                       <button onClick={() => setSelectedCandidate(c)} className="bg-indigo-600 text-white px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-100">Evaluate Intel</button>
                     </td>
                   </tr>
@@ -230,10 +248,10 @@ export default function App() {
           </div>
         )}
 
-        {/* 5. ANALYTICS */}
+        {/* 5. ANALYTICS ROI */}
         {activeTab === 'Analytics' && (
           <div className="bg-indigo-600 p-12 rounded-[40px] shadow-2xl text-white relative overflow-hidden animate-in fade-in">
-             <h4 className="text-[10px] font-black uppercase tracking-[0.2em] mb-4 opacity-60 italic">Elite Sourcing Impact</h4>
+             <h4 className="text-[10px] font-black uppercase tracking-[0.2em] mb-4 opacity-60 italic">Sourcing Impact Matrix</h4>
              <p className="text-7xl font-[900] italic tracking-tighter leading-none">$14,250</p>
              <p className="text-[10px] font-black uppercase mt-4 opacity-60">Net Ad Spend Efficiency Savings</p>
              <div className="absolute -right-10 -top-10 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
@@ -246,7 +264,7 @@ export default function App() {
             <div className="bg-white w-full max-w-lg rounded-[48px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
               <div className="bg-[#0F172A] p-10 text-white flex justify-between items-center">
                 <h3 className="text-2xl font-[900] italic uppercase tracking-tighter">Candidate Intel</h3>
-                <button onClick={() => {setSelectedCandidate(null); setShowEmailPreview(false);}} className="text-slate-500 text-3xl">✕</button>
+                <button onClick={() => {setSelectedCandidate(null); setShowEmailPreview(false);}} className="text-slate-500 text-3xl transition-colors hover:text-white">✕</button>
               </div>
               <div className="p-10">
                 {!showEmailPreview ? (
@@ -261,14 +279,14 @@ export default function App() {
                         ))}
                       </ul>
                     </div>
-                    <button onClick={() => setShowEmailPreview(true)} className="w-full py-5 bg-indigo-600 text-white rounded-2xl font-[900] italic uppercase tracking-widest text-xs shadow-xl">Schedule Loop</button>
+                    <button onClick={() => setShowEmailPreview(true)} className="w-full py-5 bg-indigo-600 text-white rounded-2xl font-[900] italic uppercase tracking-widest text-xs shadow-xl hover:bg-indigo-700">Schedule Loop</button>
                   </>
                 ) : (
                   <div className="animate-in slide-in-from-right-4">
                      <div className="bg-slate-50 border border-slate-200 p-8 rounded-[32px] text-sm text-slate-600 italic mb-8 shadow-inner">
-                        Hi {selectedCandidate.name.split(' ')[0]}, Our AI has flagged your profile as a potential match for <b>{selectedCandidate.role}</b>. We'd love to schedule a briefing call...
+                        Hi {selectedCandidate.name.split(' ')[0]}, Our AI has flagged your profile as a high-potential match for our <b>{selectedCandidate.role}</b> position. We'd love to schedule a briefing call...
                      </div>
-                     <button onClick={() => {alert('Automation Triggered!'); setSelectedCandidate(null); setShowEmailPreview(false);}} className="w-full py-5 bg-[#0F172A] text-white rounded-2xl font-[900] italic uppercase tracking-tighter shadow-xl hover:scale-[1.02] transition-all">Execute Automation 🚀</button>
+                     <button onClick={() => {alert('Invite Sent!'); setSelectedCandidate(null); setShowEmailPreview(false);}} className="w-full py-5 bg-[#0F172A] text-white rounded-2xl font-[900] italic uppercase tracking-tighter shadow-xl">Confirm & Send Invite 🚀</button>
                   </div>
                 )}
               </div>
