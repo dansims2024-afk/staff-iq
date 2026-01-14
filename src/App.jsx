@@ -1,46 +1,71 @@
 import React, { useState } from 'react';
 
 export default function App() {
+  // --- 1. GLOBAL STATE MANAGEMENT ---
   const [activeTab, setActiveTab] = useState('Dashboard');
   const [selectedCandidate, setSelectedCandidate] = useState(null);
-  const [editingJob, setEditingJob] = useState(null); // State for the Job Editor
+  const [editingJob, setEditingJob] = useState(null); 
+  const [showEmailPreview, setShowEmailPreview] = useState(false);
   
-  // SHARED STATE: These are your "Projects"
+  // Job Posting / Project Holder State
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [isPublished, setIsPublished] = useState(false);
+
+  // --- 2. SHARED DATA REPOSITORY ---
   const [jobs, setJobs] = useState([
     { id: 101, title: "Senior Software Engineer", dept: "Engineering", location: "Remote", applicants: 42, status: "Active", description: "React and Node expert needed for high-growth team." },
-    { id: 102, title: "Product Designer", dept: "Design", location: "New York", applicants: 18, status: "Active", description: "Lead our UI/UX initiatives from concept to launch." }
+    { id: 102, title: "Product Designer", dept: "Design", location: "New York", applicants: 18, status: "Active", description: "Lead our UI/UX initiatives from concept to launch." },
+    { id: 103, title: "Growth Marketer", dept: "Marketing", location: "London", applicants: 0, status: "Draft", description: "Seeking a data-driven marketer." }
   ]);
 
   const candidates = [
-    { id: 1, name: "Sarah Chen", role: "Senior Dev", score: "94%", source: "Google Jobs", email: "s.chen@techmail.io", aiHits: ["5+ years React/Node.js", "Ex-Google Architecture Lead"] },
-    { id: 2, name: "Marcus Wright", role: "UX Designer", score: "88%", source: "LinkedIn", email: "m.wright@design.com", aiHits: ["Figma Systems pro", "Accessibility specialist"] }
+    { id: 1, name: "Sarah Chen", role: "Senior Dev", score: "94%", source: "Google Jobs", email: "s.chen@techmail.io", aiHits: ["5+ years React/Node.js", "Ex-Google Lead", "Architecture expert"] },
+    { id: 2, name: "Marcus Wright", role: "UX Designer", score: "88%", source: "LinkedIn", email: "m.wright@design.com", aiHits: ["Figma Specialist", "Accessibility focus", "B2B SaaS background"] }
   ];
 
-  // Function to save edits from the Job Editor
+  // --- 3. FUNCTIONAL LOGIC ---
   const saveJobEdits = () => {
     setJobs(jobs.map(j => j.id === editingJob.id ? editingJob : j));
     setEditingJob(null);
-    alert("Project Updated Successfully");
+  };
+
+  const handleFinalPublish = () => {
+    setIsPublishing(true);
+    setTimeout(() => {
+      const newJob = { id: Date.now(), title, dept: "General", location: "Remote", applicants: 0, status: "Active", description };
+      setJobs([newJob, ...jobs]);
+      setIsPublishing(false);
+      setIsPublished(true);
+    }, 1500);
+  };
+
+  const generateAI = () => {
+    if (!title) return alert("Enter Title!");
+    setIsGenerating(true);
+    setTimeout(() => {
+      setDescription(`## ${title} Overview\nJoin Staff-IQ to lead our next phase of growth.\n\n### Requirements\n- High velocity execution\n- 5+ years experience\n- Strategic mindset`);
+      setIsGenerating(false);
+    }, 1000);
   };
 
   return (
-    <div className="flex min-h-screen bg-[#F8FAFC] text-[#0F172A] font-sans">
+    <div className="flex min-h-screen bg-[#F8FAFC] text-[#0F172A] font-sans selection:bg-indigo-100">
       
-      {/* SIDEBAR */}
-      <nav className="w-64 bg-[#0F172A] text-white p-6 fixed h-full flex flex-col shadow-2xl z-30">
-        <div className="mb-12 flex items-center gap-3">
+      {/* SIDEBAR BRANDING */}
+      <nav className="w-64 bg-[#0F172A] text-white p-6 fixed h-full flex flex-col shadow-2xl z-20">
+        <div className="mb-12">
+          <div className="flex items-center gap-3 mb-1">
              <img src="/logo.png" alt="Staff-IQ" className="w-8 h-8 object-contain" />
              <h1 className="text-2xl font-[900] italic tracking-tighter uppercase leading-none">Staff-IQ</h1>
+          </div>
+          <p className="text-[9px] font-black text-indigo-400 uppercase tracking-[0.2em] ml-11 leading-none italic">AI Sourcing & Tracking</p>
         </div>
         <div className="flex flex-col gap-2 flex-1">
           {['Dashboard', 'Jobs', 'Post a Job', 'Candidates', 'Analytics'].map((tab) => (
-            <button 
-              key={tab} 
-              onClick={() => {setActiveTab(tab); setEditingJob(null);}}
-              className={`text-left p-3 px-5 rounded-xl font-bold flex items-center gap-3 transition-all ${activeTab === tab ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:bg-slate-800'}`}
-            >
-              {tab}
-            </button>
+            <button key={tab} onClick={() => {setActiveTab(tab); setEditingJob(null); setIsPublished(false);}} className={`text-left p-3 px-5 rounded-xl font-bold flex items-center gap-3 transition-all ${activeTab === tab ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:bg-slate-800'}`}>{tab}</button>
           ))}
         </div>
       </nav>
@@ -48,76 +73,158 @@ export default function App() {
       <main className="flex-1 ml-64 p-10">
         <header className="mb-10 border-b border-slate-200 pb-6 flex justify-between items-end">
           <h2 className="text-4xl font-[900] italic uppercase tracking-tight">{activeTab}</h2>
+          <span className="text-[10px] font-black text-slate-400 tracking-widest italic">JAN 2026 Node</span>
         </header>
 
         {/* 1. DASHBOARD */}
         {activeTab === 'Dashboard' && (
-          <div className="grid grid-cols-3 gap-6 animate-in fade-in">
+          <div className="grid grid-cols-3 gap-6 animate-in fade-in duration-500">
             <div className="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm">
-              <p className="text-slate-400 text-[10px] font-black uppercase mb-1">Live Projects</p>
+              <p className="text-slate-400 text-[10px] font-black uppercase mb-1">Active Projects</p>
               <p className="text-4xl font-[900] italic text-indigo-600">{jobs.length}</p>
             </div>
-            {/* ... other stats ... */}
+            <div className="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm">
+              <p className="text-slate-400 text-[10px] font-black uppercase mb-1">Total Candidates</p>
+              <p className="text-4xl font-[900] italic text-emerald-500">458</p>
+            </div>
+            <div className="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm">
+              <p className="text-slate-400 text-[10px] font-black uppercase mb-1">Savings ROI</p>
+              <p className="text-4xl font-[900] italic text-amber-500">$14.2k</p>
+            </div>
           </div>
         )}
 
-        {/* 2. JOBS LIST (NOW FULLY FUNCTIONAL) */}
-        {activeTab === 'Jobs' && !editingJob && (
-          <div className="space-y-4 animate-in fade-in">
-            {jobs.map(j => (
-              <div key={j.id} className="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm flex justify-between items-center transition-all hover:border-indigo-200">
-                <div className="cursor-pointer" onClick={() => setEditingJob(j)}>
-                  <h4 className="text-xl font-[900] italic uppercase leading-none mb-2 hover:text-indigo-600 transition-colors">{j.title}</h4>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{j.dept} • {j.location}</p>
-                </div>
-                <div className="flex gap-4 items-center">
-                   <button onClick={() => {setActiveTab('Candidates')}} className="text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg hover:bg-indigo-100">{j.applicants} Applicants</button>
-                   <button onClick={() => setEditingJob(j)} className="px-6 py-2 bg-[#0F172A] text-white rounded-xl text-[10px] font-black uppercase hover:bg-slate-800 transition-all">Edit Project</button>
-                </div>
+        {/* 2. JOBS LIST & EDITOR */}
+        {activeTab === 'Jobs' && (
+          <div className="animate-in fade-in">
+            {!editingJob ? (
+              <div className="space-y-4">
+                {jobs.map(j => (
+                  <div key={j.id} className="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm flex justify-between items-center transition-all hover:border-indigo-200">
+                    <div className="cursor-pointer" onClick={() => setEditingJob(j)}>
+                      <h4 className="text-xl font-[900] italic uppercase leading-none mb-2 hover:text-indigo-600 transition-all">{j.title}</h4>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{j.dept} • {j.location}</p>
+                    </div>
+                    <div className="flex gap-4 items-center">
+                       <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg">{j.applicants} Applicants</span>
+                       <button onClick={() => setEditingJob(j)} className="px-6 py-2 bg-[#0F172A] text-white rounded-xl text-[10px] font-black uppercase">Edit</button>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            ) : (
+              <div className="bg-white p-10 rounded-[40px] shadow-xl border border-slate-100 animate-in slide-in-from-right-4">
+                 <div className="flex justify-between items-center mb-10">
+                    <h3 className="text-2xl font-[900] italic uppercase tracking-tighter">Edit Project</h3>
+                    <button onClick={() => setEditingJob(null)} className="text-slate-400 font-bold uppercase text-xs">✕ Cancel</button>
+                 </div>
+                 <div className="space-y-6">
+                    <input value={editingJob.title} onChange={(e) => setEditingJob({...editingJob, title: e.target.value})} className="w-full p-4 bg-slate-50 rounded-2xl border-none font-bold text-lg" />
+                    <textarea value={editingJob.description} onChange={(e) => setEditingJob({...editingJob, description: e.target.value})} className="w-full h-64 p-6 bg-slate-50 rounded-[32px] border-none text-sm leading-relaxed" />
+                    <button onClick={saveJobEdits} className="w-full py-5 bg-indigo-600 text-white rounded-2xl font-[900] italic uppercase tracking-tighter shadow-xl">Update Project Info</button>
+                 </div>
+              </div>
+            )}
           </div>
         )}
 
-        {/* 3. THE JOB EDITOR VIEW */}
-        {activeTab === 'Jobs' && editingJob && (
-          <div className="bg-white p-12 rounded-[40px] shadow-xl border border-slate-100 animate-in slide-in-from-right-4">
-             <div className="flex justify-between items-center mb-10">
-                <h3 className="text-2xl font-[900] italic uppercase tracking-tighter">Edit Project: {editingJob.title}</h3>
-                <button onClick={() => setEditingJob(null)} className="text-slate-400 font-bold">✕ Close</button>
-             </div>
-             <div className="space-y-6">
-                <div>
-                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 ml-1">Project Title</label>
-                   <input 
-                      value={editingJob.title} 
-                      onChange={(e) => setEditingJob({...editingJob, title: e.target.value})}
-                      className="w-full p-4 bg-slate-50 rounded-2xl border-none font-bold text-lg focus:ring-2 focus:ring-indigo-500 outline-none"
-                   />
-                </div>
-                <div>
-                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 ml-1">Live Description</label>
-                   <textarea 
-                      value={editingJob.description} 
-                      onChange={(e) => setEditingJob({...editingJob, description: e.target.value})}
-                      className="w-full h-64 p-6 bg-slate-50 rounded-[32px] border-none text-sm leading-relaxed outline-none focus:ring-2 focus:ring-indigo-500"
-                   />
-                </div>
-                <div className="flex gap-4 pt-4">
-                   <button onClick={saveJobEdits} className="flex-1 py-5 bg-indigo-600 text-white rounded-2xl font-[900] italic uppercase tracking-tighter shadow-xl shadow-indigo-100">Save Changes</button>
-                   <button onClick={() => setEditingJob(null)} className="px-10 py-5 bg-slate-100 text-slate-400 rounded-2xl font-black uppercase text-xs">Cancel</button>
-                </div>
-             </div>
+        {/* 3. POST A JOB */}
+        {activeTab === 'Post a Job' && (
+          <div className="max-w-4xl space-y-8 animate-in slide-in-from-bottom-4">
+            <div className="bg-white p-10 rounded-[40px] shadow-xl border border-slate-100">
+              <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full p-4 bg-slate-50 rounded-2xl border-none font-[900] italic text-2xl uppercase mb-6 outline-none focus:ring-2 focus:ring-indigo-500" placeholder="New Project Title..." />
+              <div className="grid grid-cols-2 gap-4 mb-8">
+                  <button onClick={handleFinalPublish} className={`py-5 rounded-2xl font-black uppercase text-xs tracking-widest transition-all ${isPublished ? 'bg-emerald-500 text-white' : 'bg-[#0F172A] text-white'}`}>{isPublished ? "✓ Google Indexed" : isPublishing ? "Indexing..." : "Publish to Google Jobs"}</button>
+                  <button onClick={() => alert('Download Started')} className="py-5 bg-white border-2 border-indigo-600 text-indigo-600 rounded-2xl font-black uppercase text-xs tracking-widest">XML Feed Download</button>
+              </div>
+              <div className="flex justify-between items-end mb-2">
+                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">AI Content Generation</span>
+                 <button onClick={generateAI} className="text-indigo-600 font-black text-xs hover:underline italic">✨ Generate JD</button>
+              </div>
+              <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="w-full h-64 p-8 bg-slate-50 rounded-[32px] border-none text-sm leading-relaxed" placeholder="Click generate..." />
+            </div>
           </div>
         )}
 
-        {/* ... CANDIDATES & ANALYTICS VIEWS REMAIN FULLY POPULATED ... */}
+        {/* 4. CANDIDATES */}
         {activeTab === 'Candidates' && (
           <div className="bg-white rounded-[32px] shadow-sm border border-slate-100 overflow-hidden animate-in fade-in">
-             {/* Candidates Table logic here... */}
+            <table className="w-full text-left">
+              <thead>
+                <tr className="bg-slate-50 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
+                  <th className="p-8">Candidate</th>
+                  <th className="p-8">AI Fit Score</th>
+                  <th className="p-8">Source</th>
+                  <th className="p-8">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {candidates.map(c => (
+                  <tr key={c.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="p-8 font-black text-lg">{c.name}</td>
+                    <td className="p-8 font-[900] italic text-2xl text-indigo-600 tracking-tighter">{c.score}</td>
+                    <td className="p-8"><span className="px-3 py-1 bg-slate-100 text-slate-500 rounded-lg text-[10px] font-black uppercase">{c.source}</span></td>
+                    <td className="p-8"><button onClick={() => setSelectedCandidate(c)} className="bg-indigo-600 text-white px-6 py-2 rounded-xl text-[10px] font-black uppercase shadow-lg shadow-indigo-100">Evaluate</button></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
 
+        {/* 5. ANALYTICS */}
+        {activeTab === 'Analytics' && (
+          <div className="grid grid-cols-2 gap-8 animate-in fade-in">
+              <div className="bg-white p-10 rounded-[40px] border border-slate-100 shadow-sm">
+                  <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-8">Channel ROI</h4>
+                  <div className="space-y-6">
+                      {['Google Jobs', 'XML Feed', 'LinkedIn'].map((s, i) => (
+                          <div key={s} className="space-y-2">
+                              <div className="flex justify-between text-[10px] font-black uppercase text-slate-500"><span>{s}</span><span>{95 - (i*10)}%</span></div>
+                              <div className="h-2 bg-slate-100 rounded-full overflow-hidden"><div className="h-full bg-indigo-500" style={{width: `${95-(i*10)}%`}}></div></div>
+                          </div>
+                      ))}
+                  </div>
+              </div>
+              <div className="bg-indigo-600 p-10 rounded-[40px] shadow-2xl text-white">
+                  <p className="text-[10px] font-black uppercase tracking-widest mb-4 opacity-60">Staff-IQ Impact</p>
+                  <p className="text-6xl font-[900] italic tracking-tighter leading-none">$14,250</p>
+                  <p className="text-[10px] font-black uppercase mt-2 opacity-60">Savings vs Paid Ads</p>
+              </div>
+          </div>
+        )}
+
+        {/* EVALUATION MODAL */}
+        {selectedCandidate && (
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+            <div className="bg-white w-full max-w-lg rounded-[48px] shadow-2xl overflow-hidden animate-in zoom-in-95">
+              <div className="bg-[#0F172A] p-10 text-white flex justify-between items-center">
+                <h3 className="text-2xl font-[900] italic uppercase tracking-tighter">Candidate Intel</h3>
+                <button onClick={() => {setSelectedCandidate(null); setShowEmailPreview(false);}} className="text-slate-500 text-2xl">✕</button>
+              </div>
+              <div className="p-10">
+                {!showEmailPreview ? (
+                  <>
+                    <div className="mb-8 bg-indigo-50/50 p-6 rounded-[32px] border border-indigo-100">
+                      <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-4 italic">✨ AI Analysis</p>
+                      <ul className="space-y-2 text-sm font-bold text-slate-700">
+                        {selectedCandidate.aiHits.map((h, i) => <li key={i}>• {h}</li>)}
+                      </ul>
+                    </div>
+                    <button onClick={() => setShowEmailPreview(true)} className="w-full py-5 bg-indigo-600 text-white rounded-2xl font-[900] italic uppercase tracking-tighter shadow-xl">Schedule Interview</button>
+                  </>
+                ) : (
+                  <div className="animate-in slide-in-from-right-4">
+                     <div className="border border-slate-100 p-6 rounded-2xl text-sm text-slate-600 bg-slate-50 italic mb-8">
+                        Hi {selectedCandidate.name.split(' ')[0]}, Our AI team at <b>Staff-IQ</b> has evaluated your resume. We'd love to schedule a call...
+                     </div>
+                     <button onClick={() => {alert('Sent!'); setSelectedCandidate(null); setShowEmailPreview(false);}} className="w-full py-5 bg-[#0F172A] text-white rounded-2xl font-[900] italic uppercase tracking-tighter">Confirm & Send Invite 🚀</button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
