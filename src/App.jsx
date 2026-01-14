@@ -57,11 +57,9 @@ export default function App() {
           ))}
         </div>
 
-        <div className="mt-auto pt-8 border-t border-slate-800">
-          <div className="flex items-center gap-3 mb-4">
-             <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-             <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none">SIQ Master Node: Active</span>
-          </div>
+        <div className="mt-auto pt-8 border-t border-slate-800 flex items-center gap-3">
+          <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+          <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none tracking-tight">SIQ Master Node: Active</span>
         </div>
       </nav>
 
@@ -74,7 +72,9 @@ export default function App() {
             <h2 className="text-4xl font-[900] italic uppercase tracking-tighter leading-none mb-2">{activeTab}</h2>
             <p className="text-slate-600 text-[10px] font-black uppercase tracking-widest italic">Intelligence Synchronization Active</p>
           </div>
-          <img src="/logo.png" alt="Staff-IQ Logo" className="w-12 h-12 object-contain opacity-80" />
+          <div className="bg-[#111827] p-2 rounded-xl border border-slate-800 shadow-lg">
+            <img src="/logo.png" alt="Staff-IQ Logo" className="w-10 h-10 object-contain" />
+          </div>
         </header>
 
         {/* DASHBOARD VIEW */}
@@ -154,7 +154,12 @@ export default function App() {
         {activeTab === 'Post a Job' && (
           <div className="max-w-4xl animate-in slide-in-from-bottom-4">
              <div className="bg-[#111827] p-12 rounded-[48px] border border-slate-800 shadow-2xl">
-                <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-slate-800/50 p-8 rounded-[32px] border-none font-[900] italic text-4xl uppercase mb-8 outline-none focus:ring-2 focus:ring-indigo-500 text-white shadow-inner" placeholder="TARGET ROLE TITLE..." />
+                <input 
+                  value={title} 
+                  onChange={(e) => setTitle(e.target.value)} 
+                  className="w-full bg-slate-800/50 p-8 rounded-[32px] border-none font-[900] italic text-4xl uppercase mb-8 outline-none focus:ring-2 focus:ring-indigo-500 text-white shadow-inner" 
+                  placeholder="TARGET ROLE TITLE..." 
+                />
                 <button onClick={generateStrategicAI} disabled={isGenerating} className="mb-10 bg-indigo-600 text-white px-10 py-4 rounded-full font-[900] italic text-xs uppercase tracking-widest hover:bg-indigo-700 shadow-xl shadow-indigo-500/20">{isGenerating ? "Analyzing..." : "✨ Generate Strategic JD"}</button>
                 <div className="w-full min-h-[500px] p-12 bg-slate-900/50 rounded-[40px] shadow-inner overflow-y-auto">
                    {description ? <p className="text-sm font-bold text-slate-400 leading-relaxed whitespace-pre-wrap">{description}</p> : <div className="h-full flex items-center justify-center opacity-20"><span className="text-6xl italic font-black">SIQ</span></div>}
