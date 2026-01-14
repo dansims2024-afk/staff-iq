@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 
 export default function App() {
   // --- 1. GLOBAL STATE (Deep Midnight Mode) ---
-  const [activeTab, setActiveTab] = useState('Dashboard');
+  const [activeTab, setActiveTab] = useState('Post a Job');
   const [searchQuery, setSearchQuery] = useState("");
   
   // Recruitment Engine State
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isPublished, setIsPublished] = useState(false);
 
   // --- 2. MASTER DATA REPOSITORY ---
   const [jobs] = useState([
@@ -30,9 +31,36 @@ export default function App() {
     if (!title) return alert("System requires a Job Title.");
     setIsGenerating(true);
     setTimeout(() => {
-      setDescription(`MISSION: ${title.toUpperCase()}\n\nTHE IMPACT\nJoin Staff-IQ. As our ${title}, you will ensure our high-velocity environment remains organized and scalable.\n\n90-DAY SUCCESS METRICS\n• Optimization: Improve 3 core workflows.\n• Execution: Maintain a 100% accuracy rate on projects.`);
+      // Expanded JD Content
+      const expandedJD = `MISSION: ${title.toUpperCase()}
+
+THE IMPACT
+Join Staff-IQ, the platform redefining recruitment. As our ${title}, you will ensure that our high-velocity environment remains organized, efficient, and infinitely scalable. You are not just a worker; you are an architect of our growth.
+
+90-DAY SUCCESS METRICS
+• Optimization: Audit and improve at least 3 core workflows within your first quarter.
+• Execution: Maintain a 100% accuracy rate on high-priority mission-critical tasks.
+• Integration: Establish a seamless communication loop between your department and leadership.
+
+THE ARCHETYPE
+• High-Velocity Execution: You anticipate needs before they arise and move with intentional speed.
+• Strategic Mindset: You solve problems at the root, not the symptom.
+• Elite Communication: You translate complexity into clarity for all stakeholders.
+• Technical Literacy: You leverage AI tools and data to multiply your output.
+
+PERKS & LOGISTICS
+• Remote-First: Work from anywhere with a high-speed node.
+• Equity: Own a piece of the platform you are building.
+• Growth: Clear pathway to leadership roles as the node expands.`;
+      
+      setDescription(expandedJD);
       setIsGenerating(false);
     }, 1500);
+  };
+
+  const handlePublish = (platform) => {
+    setIsPublished(true);
+    alert(`Syncing Node: ${title} is now being indexed on ${platform}.`);
   };
 
   return (
@@ -55,10 +83,9 @@ export default function App() {
             <button 
               key={tab} 
               onClick={() => setActiveTab(tab)} 
-              className={`text-left p-3 px-5 rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all flex justify-between items-center ${activeTab === tab ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-500/20' : 'text-slate-400 hover:bg-slate-800'}`}
+              className={`text-left p-3 px-5 rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all flex justify-between items-center ${activeTab === tab ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:bg-slate-800'}`}
             >
               {tab}
-              {tab === 'Candidates' && <span className="bg-rose-500 text-[9px] px-2 py-0.5 rounded-full text-white font-black">3</span>}
             </button>
           ))}
         </div>
@@ -73,7 +100,7 @@ export default function App() {
       <main className="flex-1 ml-64 p-10 bg-[#0F172A]">
         
         {/* GLOBAL SEARCH HEADER */}
-        <header className="mb-10 flex justify-between items-center gap-8">
+        <header className="mb-10 flex justify-between items-center gap-8 text-white">
           <div className="flex-1 relative">
             <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-500">🔍</span>
             <input 
@@ -81,78 +108,14 @@ export default function App() {
               placeholder="GLOBAL SEARCH: INTEL, JOBS, CANDIDATES..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-[#1E293B] border border-slate-700 p-4 pl-12 rounded-2xl text-[10px] font-black tracking-widest uppercase outline-none focus:border-indigo-500 transition-all placeholder:text-slate-600 text-white shadow-inner" 
+              className="w-full bg-[#1E293B] border border-slate-700 p-4 pl-12 rounded-2xl text-[10px] font-black tracking-widest uppercase outline-none focus:border-indigo-500 transition-all placeholder:text-slate-600 text-white" 
             />
           </div>
-          <button onClick={() => setActiveTab('Post a Job')} className="px-8 py-4 bg-white text-[#0F172A] font-[900] italic uppercase text-[10px] tracking-widest rounded-2xl hover:scale-105 transition-all shadow-xl">New Requisition</button>
         </header>
-
-        {/* DASHBOARD: HIGH-DENSITY INTEL */}
-        {activeTab === 'Dashboard' && (
-          <div className="space-y-8 animate-in fade-in duration-500">
-            {/* KPI MATRIX */}
-            <div className="grid grid-cols-4 gap-6">
-              {[
-                { label: 'Live Roles', value: jobs.length, color: 'text-indigo-400' },
-                { label: 'Viral Reach', value: '1.2k', color: 'text-emerald-400' },
-                { label: 'Avg Fit', value: '82%', color: 'text-amber-400' },
-                { label: 'Net Savings', value: '$14.2k', color: 'text-rose-400' }
-              ].map((s, i) => (
-                <div key={i} className="bg-[#1E293B] p-6 rounded-[32px] border border-slate-800 shadow-sm hover:border-indigo-500/50 transition-all">
-                  <p className="text-[10px] font-black text-slate-500 uppercase italic mb-1 leading-none">{s.label}</p>
-                  <p className={`text-3xl font-[900] italic leading-none ${s.color}`}>{s.value}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="grid grid-cols-12 gap-8">
-              {/* PRIORITY FEED  */}
-              <div className="col-span-8 space-y-4">
-                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 italic px-2">Pipeline Priority</h3>
-                {candidates.map((c) => (
-                  <div key={c.id} className="bg-[#1E293B] border border-slate-800 p-5 rounded-[24px] flex items-center gap-6 group hover:border-indigo-500 transition-all cursor-pointer shadow-lg">
-                    <div className="w-12 h-12 bg-[#0F172A] rounded-xl flex items-center justify-center text-lg font-[900] italic text-indigo-400 group-hover:scale-110 transition-all shadow-inner">
-                      {c.score.replace('%', '')}
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-black text-base uppercase italic leading-none mb-1 group-hover:text-indigo-400 transition-colors text-white">{c.name}</p>
-                      <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">{c.role} • {c.stage}</p>
-                    </div>
-                    <span className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest ${c.status === 'Needs Review' ? 'bg-rose-500/10 text-rose-400' : 'bg-indigo-500/10 text-indigo-400'}`}>
-                      {c.status}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              {/* SOURCING MODULES */}
-              <div className="col-span-4 space-y-6">
-                <div className="bg-[#1E293B] border border-slate-800 p-8 rounded-[40px] shadow-sm">
-                   <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-6 italic leading-none">Referral Yield</h4>
-                   <p className="text-6xl font-[900] italic tracking-tighter leading-none text-indigo-400 mb-2">32%</p>
-                   <p className="text-[9px] font-bold text-slate-500 leading-relaxed uppercase">Sourcing velocity up 14% via internal links.</p>
-                   <button onClick={() => setActiveTab('Jobs')} className="mt-6 w-full py-4 bg-indigo-600 text-white rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-indigo-700 transition-all shadow-lg">Magic Links</button>
-                </div>
-
-                <div className="bg-[#111827] border border-slate-800 p-8 rounded-[40px] shadow-inner">
-                   <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600 mb-6 italic leading-none">Activity Node</h4>
-                   <div className="space-y-4">
-                      {['XML Feed Sync: Success', 'AI Architect: Blueprint Live', 'Schema: 3 Roles Active'].map((log, i) => (
-                        <div key={i} className="flex items-start gap-3">
-                          <div className="w-1 h-1 bg-indigo-500 rounded-full mt-1.5"></div>
-                          <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest leading-none">{log}</p>
-                        </div>
-                      ))}
-                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* POST A JOB: STRATEGIC ARCHITECT */}
         {activeTab === 'Post a Job' && (
-          <div className="max-w-4xl space-y-8 animate-in slide-in-from-bottom-4">
+          <div className="max-w-5xl space-y-8 animate-in slide-in-from-bottom-4">
             <div className="bg-[#1E293B] p-10 rounded-[40px] border border-slate-800 shadow-2xl">
               <input 
                 value={title} 
@@ -166,44 +129,56 @@ export default function App() {
                     <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest italic leading-none">Strategic AI Architect</span>
                   </div>
                   <button onClick={generateStrategicAI} disabled={isGenerating} className="bg-indigo-600 text-white px-10 py-3 rounded-full font-[900] italic text-xs uppercase tracking-widest hover:bg-indigo-700 shadow-xl shadow-indigo-500/20">
-                    {isGenerating ? "Analyzing..." : "✨ Generate Strategic JD"}
+                    {isGenerating ? "Analyzing Talent Markets..." : "✨ Generate Strategic JD"}
                   </button>
               </div>
-              <div className="w-full min-h-[400px] p-10 bg-[#0F172A] rounded-[32px] shadow-inner overflow-y-auto border border-slate-800">
+
+              {/* JD RENDERER */}
+              <div className="w-full min-h-[500px] p-12 bg-[#0F172A] rounded-[40px] shadow-inner overflow-y-auto border border-slate-800 mb-10">
                 {description ? (
                   <div className="max-w-none">
                     {description.split('\n').map((line, i) => (
-                      <p key={i} className={`text-sm mb-3 ${line.startsWith('MISSION:') ? 'text-2xl font-[900] italic text-indigo-400 mb-8 leading-none' : 'font-bold text-slate-400 leading-relaxed'}`}>{line}</p>
+                      <p key={i} className={`text-sm mb-3 ${line.startsWith('MISSION:') ? 'text-3xl font-[900] italic text-indigo-400 mb-8 leading-none' : 'font-bold text-slate-400 leading-relaxed'}`}>{line}</p>
                     ))}
                   </div>
                 ) : <div className="h-full flex flex-col items-center justify-center py-20 opacity-20"><span className="text-6xl italic font-black text-white">SIQ</span></div>}
+              </div>
+
+              {/* DISTRIBUTION BUTTONS */}
+              <div className="grid grid-cols-2 gap-6 pt-10 border-t border-slate-800">
+                  <button 
+                    onClick={() => handlePublish('Google Jobs')} 
+                    className="py-6 bg-white text-[#0F172A] rounded-2xl font-[900] italic uppercase text-sm tracking-widest hover:scale-[1.02] transition-all shadow-xl"
+                  >
+                      Publish to Google Jobs
+                  </button>
+                  <button 
+                    onClick={() => handlePublish('Universal XML Feed')} 
+                    className="py-6 bg-transparent border-2 border-indigo-500 text-indigo-500 rounded-2xl font-[900] italic uppercase text-sm tracking-widest hover:bg-indigo-500/10 transition-all"
+                  >
+                      Sync Universal XML Feed
+                  </button>
               </div>
             </div>
           </div>
         )}
 
-        {/* PIPELINE VIEW  */}
-        {activeTab === 'Candidates' && (
-          <div className="grid grid-cols-4 gap-4 h-[70vh] animate-in fade-in">
-            {stages.map(stage => (
-              <div key={stage} className="flex flex-col gap-4">
-                <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500 italic px-2">{stage}</h3>
-                <div className="bg-[#111827] rounded-[32px] p-3 flex-1 border-2 border-dashed border-slate-800 overflow-y-auto shadow-inner">
-                  {candidates.filter(c => c.stage === stage).map(c => (
-                    <div key={c.id} className="bg-[#1E293B] p-5 rounded-[24px] shadow-lg mb-3 border border-slate-800 group hover:border-indigo-600 transition-all">
-                      <div className="flex justify-between items-start mb-3">
-                        <span className="text-xl font-[900] italic text-indigo-400 leading-none">{c.score.replace('%', '')}</span>
-                      </div>
-                      <p className="font-black text-sm uppercase italic leading-none mb-1 text-white">{c.name}</p>
-                      <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">{c.role}</p>
-                    </div>
-                  ))}
-                </div>
+        {/* 1. DASHBOARD */}
+        {activeTab === 'Dashboard' && (
+          <div className="grid grid-cols-4 gap-6 animate-in fade-in duration-500">
+            {[
+              { label: 'Live Roles', value: jobs.length, color: 'text-indigo-400' },
+              { label: 'Viral Reach', value: '1.2k', color: 'text-emerald-400' },
+              { label: 'Avg Fit', value: '82%', color: 'text-amber-400' },
+              { label: 'Net Savings', value: '$14.2k', color: 'text-rose-400' }
+            ].map((s, i) => (
+              <div key={i} className="bg-[#1E293B] p-6 rounded-[32px] border border-slate-800 shadow-sm">
+                <p className="text-[10px] font-black text-slate-500 uppercase italic mb-1 leading-none">{s.label}</p>
+                <p className={`text-3xl font-[900] italic leading-none ${s.color}`}>{s.value}</p>
               </div>
             ))}
           </div>
         )}
-
       </main>
     </div>
   );
