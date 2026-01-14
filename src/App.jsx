@@ -1,27 +1,36 @@
 import React, { useState } from 'react';
 
 export default function App() {
+  // --- 1. GLOBAL STATE (Command Center) ---
   const [activeTab, setActiveTab] = useState('Dashboard');
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
 
-  // Elite Mock Data
-  const jobs = [
-    { id: 101, title: "SENIOR ACCOUNTANT", dept: "Finance", health: 85, applicants: 42, clicks: 156 },
-    { id: 102, title: "PRODUCT DESIGNER", dept: "Design", health: 45, applicants: 18, clicks: 89 }
-  ];
+  // --- 2. SAMPLE DATA REPOSITORY ---
+  const [jobs] = useState([
+    { id: 101, title: "SENIOR ACCOUNTANT", dept: "Finance", health: 85, applicants: 42, clicks: 156, velocity: "High" },
+    { id: 102, title: "PRODUCT DESIGNER", dept: "Design", health: 45, applicants: 18, clicks: 89, velocity: "Steady" },
+    { id: 103, title: "OFFICE MANAGER", dept: "Operations", health: 92, applicants: 12, clicks: 210, velocity: "High" },
+    { id: 104, title: "FRONT DESK ASSOCIATE", dept: "Operations", health: 70, applicants: 55, clicks: 402, velocity: "High" }
+  ]);
 
-  const candidates = [
-    { id: 1, name: "SARAH CHEN", role: "Senior Dev", score: "94%", status: "NEEDS REVIEW", time: "2h ago" },
-    { id: 2, name: "MARCUS WRIGHT", role: "UX Designer", score: "88%", status: "INTERVIEWING", time: "5h ago" }
-  ];
+  const [candidates, setCandidates] = useState([
+    { id: 1, name: "SARAH CHEN", role: "Senior Dev", score: "94%", status: "NEEDS REVIEW", time: "2h ago", stage: "Screening", hit: "Ex-Google Architecture" },
+    { id: 2, name: "MARCUS WRIGHT", role: "UX Designer", score: "88%", status: "INTERVIEWING", time: "5h ago", stage: "Technical", hit: "Figma Systems Pro" },
+    { id: 3, name: "ELENA ROSSI", role: "Accountant", score: "91%", status: "NEW", time: "10m ago", stage: "Sourced", hit: "CPA / Audit Lead" },
+    { id: 4, name: "DAVID PARK", role: "DevOps", score: "85%", status: "FINAL LOOP", time: "1d ago", stage: "Final Loop", hit: "Kubernetes Expert" },
+    { id: 5, name: "JULIA VANCE", role: "Front Desk", score: "96%", status: "NEW", time: "4h ago", stage: "Sourced", hit: "Hospitality Veteran" }
+  ]);
 
+  const stages = ["Sourced", "Screening", "Technical", "Final Loop"];
+
+  // --- 3. CORE LOGIC ---
   const generateStrategicAI = () => {
     if (!title) return alert("System requires a Job Title.");
     setIsGenerating(true);
     setTimeout(() => {
-      setDescription(`MISSION: ${title.toUpperCase()}\n\nTHE IMPACT\nJoin Staff-IQ... [Generated Content]`);
+      setDescription(`MISSION: ${title.toUpperCase()}\n\nTHE IMPACT\nJoin Staff-IQ. As our ${title}, you will ensure that our high-velocity environment remains organized, efficient, and infinitely scalable.\n\n90-DAY SUCCESS METRICS\n• Optimization: Audit and improve at least 3 core workflows.\n• Execution: Maintain 100% accuracy on mission-critical projects.\n\nTHE ARCHETYPE\n• High-Velocity Execution: Anticipate needs before they arise.\n• Strategic Mindset: Solve problems at the root.`);
       setIsGenerating(false);
     }, 1200);
   };
@@ -46,62 +55,70 @@ export default function App() {
             <button key={tab} onClick={() => setActiveTab(tab)} className={`text-left p-4 px-6 rounded-2xl font-black uppercase text-xs tracking-widest transition-all ${activeTab === tab ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-500/20' : 'text-slate-500 hover:bg-slate-800'}`}>{tab}</button>
           ))}
         </div>
-        <div className="mt-auto pt-8 border-t border-slate-800 flex items-center gap-3">
-          <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-          <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none">Node: SIQ-ULTIMATE-V2</span>
+
+        <div className="mt-auto pt-8 border-t border-slate-800">
+          <div className="flex items-center gap-3 mb-4">
+             <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+             <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none">SIQ Master Node: Active</span>
+          </div>
+          <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 text-center">
+             <p className="text-[9px] font-black text-slate-600 uppercase mb-1">Total Hires</p>
+             <p className="text-xl font-black italic text-indigo-400">24 / 30</p>
+          </div>
         </div>
       </nav>
 
-      {/* MAIN CONTENT */}
+      {/* MAIN COMMAND AREA */}
       <main className="flex-1 ml-72 p-12">
         
-        {/* TOP METRIC STRIP */}
+        {/* DASHBOARD VIEW */}
         {activeTab === 'Dashboard' && (
           <div className="space-y-10 animate-in fade-in duration-500">
+            {/* Top Metric Strip */}
             <div className="grid grid-cols-4 gap-6">
               {[
-                { label: 'Viral Reach', val: '1.2k', sub: '↑ 18%', color: 'text-emerald-400' },
-                { label: 'Net Savings', val: '$14.2k', sub: 'vs Paid', color: 'text-rose-400' },
-                { label: 'Speed to Hire', val: '58m', sub: 'Publish-to-Eval', color: 'text-indigo-400' },
+                { label: 'Viral Reach', val: '1.2k', sub: '↑ 18% Weekly', color: 'text-emerald-400' },
+                { label: 'Net Savings', val: '$14.2k', sub: 'vs Paid Boards', color: 'text-rose-400' },
+                { label: 'Speed to Hire', val: '58m', sub: 'Pub-to-Eval', color: 'text-indigo-400' },
                 { label: 'Click ROI', val: '32%', sub: 'Magic Links', color: 'text-amber-400' }
               ].map((s, i) => (
-                <div key={i} className="bg-[#111827] border border-slate-800 p-6 rounded-[32px] relative overflow-hidden">
+                <div key={i} className="bg-[#111827] border border-slate-800 p-6 rounded-[32px] relative overflow-hidden group">
                   <p className="text-slate-500 text-[10px] font-black uppercase mb-1 italic leading-none">{s.label}</p>
                   <p className={`text-3xl font-[900] italic ${s.color} leading-none`}>{s.val}</p>
                   <p className="text-[9px] font-black text-slate-600 uppercase mt-3">{s.sub}</p>
-                  <div className={`absolute -right-4 -bottom-4 w-12 h-12 rounded-full opacity-10 ${s.color.replace('text', 'bg')}`}></div>
+                  <div className={`absolute -right-4 -bottom-4 w-12 h-12 rounded-full opacity-5 group-hover:opacity-20 transition-all ${s.color.replace('text', 'bg')}`}></div>
                 </div>
               ))}
             </div>
 
-            {/* MAIN COMMAND GRID */}
+            {/* Main Intelligence Grid */}
             <div className="grid grid-cols-12 gap-10">
-              {/* Intelligence Hub: Wider for focus */}
+              {/* Intelligence Feed */}
               <div className="col-span-8 space-y-6">
                 <div className="flex justify-between items-center px-2">
                   <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 italic">Priority: Intelligence Feed</h3>
-                  <button className="text-[10px] font-black uppercase text-indigo-400 hover:underline">Full Pipeline</button>
+                  <button onClick={() => setActiveTab('Candidates')} className="text-[10px] font-black uppercase text-indigo-400 hover:underline">Full Pipeline</button>
                 </div>
-                {candidates.map((c) => (
+                {candidates.slice(0, 3).map((c) => (
                   <div key={c.id} className="bg-[#111827] border border-slate-800 p-6 rounded-[32px] flex items-center gap-6 group hover:border-indigo-500 transition-all cursor-pointer">
                     <div className="w-14 h-14 bg-slate-900 rounded-2xl flex items-center justify-center text-xl font-[900] italic text-indigo-400 shadow-inner">{c.score.replace('%', '')}</div>
                     <div className="flex-1">
                       <p className="font-black text-lg uppercase italic leading-none mb-1 text-white group-hover:text-indigo-400 transition-colors">{c.name}</p>
-                      <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{c.role} • {c.time}</p>
+                      <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{c.role} • {c.time} • {c.hit}</p>
                     </div>
                     <span className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest ${c.status === 'NEEDS REVIEW' ? 'bg-rose-500/10 text-rose-400' : 'bg-indigo-500/10 text-indigo-400'}`}>{c.status}</span>
                   </div>
                 ))}
               </div>
 
-              {/* Distribution Column: Narrow for status */}
+              {/* Automation Side Column */}
               <div className="col-span-4 space-y-8">
                 <div className="bg-indigo-600 rounded-[40px] p-8 text-white relative overflow-hidden shadow-2xl">
                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60 mb-6 italic leading-none">Syndication Map</h4>
                    <div className="space-y-4 text-[10px] font-black uppercase relative z-10">
-                      <div className="flex justify-between items-center"><span>Google Index</span><span className="text-emerald-300 italic animate-pulse">Live</span></div>
-                      <div className="flex justify-between items-center"><span>XML Sync</span><span className="text-emerald-300 italic">Syncing</span></div>
-                      <div className="flex justify-between items-center"><span>Jooble Hub</span><span className="opacity-40">Ready</span></div>
+                      <div className="flex justify-between items-center"><span>Google Jobs</span><span className="text-emerald-300 italic animate-pulse">Indexed</span></div>
+                      <div className="flex justify-between items-center"><span>XML Feed Sync</span><span className="text-emerald-300 italic">Syncing</span></div>
+                      <div className="flex justify-between items-center"><span>LinkedIn Loop</span><span className="opacity-40">Ready</span></div>
                    </div>
                    <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
                 </div>
@@ -109,7 +126,7 @@ export default function App() {
                 <div className="bg-[#111827] border border-slate-800 rounded-[40px] p-8">
                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 mb-6 italic leading-none">Node Activity</h4>
                    <div className="space-y-4">
-                      {['Feed Sync Successful', 'AI Blueprint Active', 'Google Index Verified'].map((log, i) => (
+                      {['XML Feed: Jooble Sync Success', 'AI Architect: Blueprint Active', 'Google Index: Verified 4 roles'].map((log, i) => (
                         <div key={i} className="flex items-start gap-3">
                           <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full mt-1.5"></div>
                           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter leading-tight italic">{log}</p>
@@ -122,12 +139,62 @@ export default function App() {
           </div>
         )}
 
+        {/* JOBS VIEW */}
+        {activeTab === 'Jobs' && (
+          <div className="grid grid-cols-2 gap-6 animate-in fade-in">
+            {jobs.map(j => (
+              <div key={j.id} className="bg-[#111827] border border-slate-800 p-8 rounded-[40px] group hover:border-indigo-500 transition-all">
+                <div className="flex justify-between items-start mb-6">
+                   <span className="px-3 py-1 bg-slate-800 rounded-lg text-[10px] font-black uppercase tracking-widest text-slate-500">{j.dept}</span>
+                   <span className={`text-[10px] font-black uppercase ${j.health > 80 ? 'text-emerald-500' : 'text-amber-500'}`}>Pipeline: {j.health}%</span>
+                </div>
+                <h4 className="text-2xl font-[900] italic uppercase leading-none mb-2">{j.title}</h4>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-8">{j.applicants} Applicants • {j.clicks} Viral Clicks</p>
+                <div className="flex gap-4">
+                  <button className="flex-1 py-3 bg-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-widest">Manage Requisition</button>
+                  <button className="px-4 py-3 bg-slate-800 rounded-xl text-[10px] font-black uppercase tracking-widest">XML Link</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* CANDIDATES VIEW (PIPELINE) */}
+        {activeTab === 'Candidates' && (
+          <div className="grid grid-cols-4 gap-6 animate-in fade-in h-[75vh]">
+            {stages.map(stage => (
+              <div key={stage} className="flex flex-col gap-6">
+                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 italic px-4 leading-none">{stage}</h3>
+                <div className="bg-[#111827] rounded-[40px] p-4 flex-1 border border-slate-800 shadow-inner overflow-y-auto space-y-4">
+                  {candidates.filter(c => c.stage === stage).map(c => (
+                    <div key={c.id} className="bg-[#1C2533] p-6 rounded-[32px] border border-slate-700 shadow-lg group hover:border-indigo-500 transition-all">
+                      <div className="flex justify-between items-start mb-4">
+                        <span className="text-2xl font-[900] italic text-indigo-400">{c.score.replace('%', '')}</span>
+                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                      </div>
+                      <p className="font-black text-sm uppercase italic leading-none mb-1">{c.name}</p>
+                      <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{c.role}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* POST A JOB */}
         {activeTab === 'Post a Job' && (
-          <div className="max-w-4xl space-y-8 animate-in slide-in-from-bottom-4">
+          <div className="max-w-4xl animate-in slide-in-from-bottom-4">
              <div className="bg-[#111827] p-12 rounded-[48px] border border-slate-800 shadow-2xl">
-                <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-slate-800/50 p-8 rounded-[32px] border-none font-[900] italic text-4xl uppercase mb-8 outline-none focus:ring-2 focus:ring-indigo-500 text-white" placeholder="TARGET ROLE TITLE..." />
-                <button onClick={generateStrategicAI} disabled={isGenerating} className="mb-10 bg-indigo-600 text-white px-10 py-4 rounded-full font-[900] italic text-xs uppercase tracking-widest hover:bg-indigo-700 shadow-xl shadow-indigo-500/20">{isGenerating ? "Architecting..." : "✨ Generate Strategic JD"}</button>
+                <input 
+                  value={title} 
+                  onChange={(e) => setTitle(e.target.value)} 
+                  className="w-full bg-slate-800/50 p-8 rounded-[32px] border-none font-[900] italic text-4xl uppercase mb-8 outline-none focus:ring-2 focus:ring-indigo-500 text-white" 
+                  placeholder="TARGET ROLE TITLE..." 
+                />
+                <button onClick={generateStrategicAI} disabled={isGenerating} className="mb-10 bg-indigo-600 text-white px-10 py-4 rounded-full font-[900] italic text-xs uppercase tracking-widest hover:bg-indigo-700 shadow-xl shadow-indigo-500/20">
+                  {isGenerating ? "Analyzing talent markets..." : "✨ Generate Strategic JD"}
+                </button>
                 <div className="w-full min-h-[500px] p-12 bg-slate-900/50 rounded-[40px] shadow-inner overflow-y-auto">
                    {description ? <p className="text-sm font-bold text-slate-400 leading-relaxed whitespace-pre-wrap">{description}</p> : <div className="h-full flex items-center justify-center opacity-20"><span className="text-6xl italic font-black">SIQ</span></div>}
                 </div>
