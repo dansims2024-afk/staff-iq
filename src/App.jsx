@@ -1,21 +1,25 @@
 import React, { useState } from 'react';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('Dashboard');
+  const [activeTab, setActiveTab] = useState('Post a Job'); // Defaulted to Post a Job for testing
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  
+  // States for UI feedback
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [isPublished, setIsPublished] = useState(false);
   const [googleOptimized, setGoogleOptimized] = useState(true);
 
   // --- 1. JOB / PROJECT REPOSITORY DATA ---
   const [jobs, setJobs] = useState([
     { id: 101, title: "Senior Software Engineer", dept: "Engineering", location: "Remote", applicants: 42, status: "Active" },
     { id: 102, title: "Product Designer", dept: "Design", location: "New York", applicants: 18, status: "Active" },
-    { id: 103, title: "Marketing Lead", dept: "Growth", location: "London", applicants: 0, status: "Draft" }, // "Holding" project
+    { id: 103, title: "Marketing Lead", dept: "Growth", location: "London", applicants: 0, status: "Draft" },
   ]);
 
-  // --- 2. CANDIDATES WITH RESUME EVALUATION DATA ---
+  // --- 2. CANDIDATES DATA ---
   const candidates = [
     { 
       id: 1, name: "Sarah Chen", role: "Senior Dev", status: "New", score: "94%", source: "LinkedIn",
@@ -37,22 +41,62 @@ export default function App() {
     },
   ];
 
-  // --- AI GENERATION LOGIC ---
-  const generateWithGemini = async () => {
+  // --- FUNCTION: MOCK AI GENERATOR (FOR TESTING) ---
+  const generateDescription = async () => {
     if (!title) return alert("Please enter a Job Title first!");
-    const googleAI = window.google?.generativeAi;
-    if (!googleAI) return alert("AI Library is still loading...");
-    
     setIsGenerating(true);
+
+    // 1. Check if real API key is missing. If so, use SAMPLE AI.
+    const apiKey = "YOUR_API_KEY_HERE"; // This would be your real key
+    
+    if (apiKey === "YOUR_API_KEY_HERE") {
+      // SIMULATED AI DELAY
+      setTimeout(() => {
+        const sampleJD = `**Job Title:** ${title}\n\n**About the Role:**\nWe are looking for a talented ${title} to join our dynamic team. In this role, you will be responsible for driving innovation and maintaining high standards of quality. You will work closely with cross-functional teams to deliver exceptional results.\n\n**Key Responsibilities:**\n• Lead the design and implementation of scalable solutions.\n• Collaborate with product managers and designers.\n• Mentor junior team members and conduct code reviews.\n\n**Requirements:**\n• 5+ years of experience in a similar role.\n• Strong problem-solving skills and attention to detail.\n• Experience with modern tech stacks.\n\n**Why Google for Jobs will love this:**\nThis description includes structured data tags for [EmploymentType], [BaseSalary], and [JobLocation], ensuring maximum visibility on the search index.`;
+        setDescription(sampleJD);
+        setIsGenerating(false);
+      }, 1500); // 1.5 second delay to feel like AI
+      return;
+    }
+
+    // 2. Real Gemini Code (Runs if you put a real key above)
     try {
-      const genAI = new googleAI.GoogleGenerativeAI("YOUR_API_KEY_HERE");
+      const googleAI = window.google?.generativeAi;
+      if (!googleAI) return alert("AI Library is still loading...");
+      const genAI = new googleAI.GoogleGenerativeAI(apiKey);
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      const prompt = `Write a professional job description for a ${title}. Include a section on "Why Google for Jobs should index this".`;
+      const prompt = `Write a professional job description for a ${title}.`;
       const result = await model.generateContent(prompt);
       setDescription(result.response.text());
     } catch (e) {
-      alert("AI Error: Check API Key");
+      alert("AI Error: " + e.message);
     } finally { setIsGenerating(false); }
+  };
+
+  // --- FUNCTION: PUBLISH TO GOOGLE ---
+  const handlePublish = () => {
+    if (!title || !description) return alert("Please fill in the Job Title and Description first.");
+    
+    setIsPublishing(true);
+    
+    // Simulate API call to Google Indexing API
+    setTimeout(() => {
+      setIsPublishing(false);
+      setIsPublished(true);
+      
+      // Add to our local "Jobs" list to show it saved
+      const newJob = { 
+        id: jobs.length + 101, 
+        title: title, 
+        dept: "General", 
+        location: "Remote", 
+        applicants: 0, 
+        status: "Active" 
+      };
+      setJobs([...jobs, newJob]);
+      
+      alert(`Success! "${title}" has been converted to Schema.org JSON-LD and pushed to Google Jobs Index.`);
+    }, 2000);
   };
 
   return (
@@ -65,7 +109,7 @@ export default function App() {
              <img src="/logo.png" alt="Staff-IQ Logo" className="w-8 h-8 object-contain" />
              <h1 className="text-2xl font-[900] italic tracking-tighter uppercase leading-none">Staff-IQ</h1>
           </div>
-          <p className="text-[9px] font-black text-indigo-400 uppercase tracking-[0.2em] ml-11 leading-none">AI-Powered Sourcing & Tracking</p>
+          <p className="text-[9px] font-black text-indigo-400 uppercase tracking-[0.2em] ml-11 leading-none">AI-Powered Sourcing</p>
         </div>
         
         <div className="flex flex-col gap-2 flex-1">
@@ -88,12 +132,12 @@ export default function App() {
           <span className="text-xs font-black text-slate-400 uppercase tracking-widest">Recruiter Console</span>
         </header>
 
-        {/* 1. DASHBOARD TAB */}
+        {/* 1. DASHBOARD */}
         {activeTab === 'Dashboard' && (
           <div className="grid grid-cols-3 gap-6 animate-in fade-in duration-500">
             <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
               <p className="text-slate-400 text-[10px] font-black uppercase mb-1">Active Projects</p>
-              <p className="text-4xl font-[900] italic text-indigo-600">3</p>
+              <p className="text-4xl font-[900] italic text-indigo-600">{jobs.length}</p>
             </div>
             <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
               <p className="text-slate-400 text-[10px] font-black uppercase mb-1">Total Resumes</p>
@@ -106,7 +150,7 @@ export default function App() {
           </div>
         )}
 
-        {/* 2. JOBS (PROJECT HOLDER) TAB */}
+        {/* 2. JOBS (PROJECT HOLDER) */}
         {activeTab === 'Jobs' && (
           <div className="space-y-6 animate-in fade-in">
             {jobs.map(job => (
@@ -114,7 +158,6 @@ export default function App() {
                 <div>
                   <div className="flex items-center gap-3 mb-2">
                     <h4 className="text-2xl font-[900] italic uppercase leading-none">{job.title}</h4>
-                    {/* Status Badges */}
                     <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${job.status === 'Active' ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-400'}`}>
                       {job.status}
                     </span>
@@ -133,14 +176,13 @@ export default function App() {
           </div>
         )}
 
-        {/* 3. POST A JOB TAB (WITH GOOGLE FEATURE) */}
+        {/* 3. POST A JOB (UPDATED WITH LOGIC) */}
         {activeTab === 'Post a Job' && (
           <div className="flex gap-8 animate-in slide-in-from-bottom-4">
             <div className="flex-1 bg-white p-10 rounded-3xl shadow-xl border border-slate-100">
               <div className="mb-8">
                 <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full p-4 bg-slate-50 rounded-2xl border-none font-bold outline-none focus:ring-2 focus:ring-indigo-500 mb-4" placeholder="Job Title" />
                 
-                {/* NEW GOOGLE FOR JOBS FEATURE */}
                 <div 
                   onClick={() => setGoogleOptimized(!googleOptimized)}
                   className={`p-4 rounded-2xl border-2 cursor-pointer flex items-center justify-between transition-all ${googleOptimized ? 'border-indigo-500 bg-indigo-50' : 'border-slate-100 bg-white'}`}
@@ -160,19 +202,44 @@ export default function App() {
 
               <div className="flex justify-between mb-2">
                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">AI Description</span>
-                 <button onClick={generateWithGemini} disabled={isGenerating} className="text-indigo-600 font-black text-xs hover:underline">
-                    {isGenerating ? "⌛ AI writing..." : "✨ Generate with Gemini"}
+                 {/* BUTTON CALLS THE SAMPLE AI FUNCTION NOW */}
+                 <button onClick={generateDescription} disabled={isGenerating} className="text-indigo-600 font-black text-xs hover:underline">
+                    {isGenerating ? "⌛ AI Writing..." : "✨ Generate with Gemini"}
                  </button>
               </div>
-              <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="w-full h-64 p-6 bg-slate-50 rounded-3xl border-none mb-8 text-sm leading-relaxed" placeholder="Description..." />
-              <button className="w-full py-5 bg-[#0F172A] text-white rounded-2xl font-black text-lg hover:bg-indigo-600 transition-all shadow-xl">
-                Publish & Index on Google 🚀
+              
+              <textarea 
+                value={description} 
+                onChange={(e) => setDescription(e.target.value)} 
+                className="w-full h-64 p-6 bg-slate-50 rounded-3xl border-none mb-8 text-sm leading-relaxed whitespace-pre-wrap" 
+                placeholder="Description will appear here..." 
+              />
+              
+              {/* GOOGLE PUBLISH BUTTON WITH LOGIC */}
+              <button 
+                onClick={handlePublish}
+                disabled={isPublishing || isPublished}
+                className={`w-full py-5 text-white rounded-2xl font-black text-lg transition-all shadow-xl ${
+                  isPublished 
+                    ? 'bg-emerald-500 cursor-default' 
+                    : isPublishing 
+                      ? 'bg-slate-700 cursor-wait' 
+                      : 'bg-[#0F172A] hover:bg-indigo-600'
+                }`}
+              >
+                {isPublished ? "✓ Published to Google!" : isPublishing ? "Indexing on Google..." : "Publish & Index on Google 🚀"}
               </button>
+              
+              {isPublished && (
+                <p className="text-center text-[10px] text-emerald-600 font-bold mt-4 uppercase tracking-widest">
+                  Live URL: https://google.com/search?ibp=htl;jobs#{Math.floor(Math.random() * 10000)}
+                </p>
+              )}
             </div>
           </div>
         )}
 
-        {/* 4. CANDIDATES TAB (WITH AI RESUME EVALUATOR) */}
+        {/* 4. CANDIDATES */}
         {activeTab === 'Candidates' && (
           <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden animate-in fade-in">
             <table className="w-full text-left">
@@ -205,7 +272,7 @@ export default function App() {
           </div>
         )}
 
-        {/* 5. ANALYTICS TAB */}
+        {/* 5. ANALYTICS */}
         {activeTab === 'Analytics' && (
           <div className="grid grid-cols-2 gap-8 animate-in fade-in">
              <div className="bg-white p-10 rounded-3xl border border-slate-100 shadow-sm text-center">
@@ -228,7 +295,7 @@ export default function App() {
           </div>
         )}
 
-        {/* RESUME EVALUATION MODAL */}
+        {/* RESUME MODAL */}
         {selectedCandidate && (
           <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <div className="bg-white w-full max-w-lg rounded-[40px] shadow-2xl overflow-hidden animate-in zoom-in-95">
@@ -241,7 +308,6 @@ export default function App() {
                   <h4 className="text-2xl font-[900] italic uppercase mb-1">{selectedCandidate.name}</h4>
                   <p className="text-sm font-bold text-slate-500">{selectedCandidate.resumeAnalysis.summary}</p>
                 </div>
-
                 <div className="space-y-4 mb-8">
                   <div className="bg-emerald-50 p-4 rounded-2xl border border-emerald-100">
                     <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-2">Pros</p>
@@ -256,7 +322,6 @@ export default function App() {
                     </ul>
                   </div>
                 </div>
-
                 <button className="w-full py-5 bg-indigo-600 text-white rounded-2xl font-[900] italic uppercase tracking-tighter shadow-xl">
                   {selectedCandidate.resumeAnalysis.recommendation === "Strong Hire" ? "Move to Interview 📅" : "Send Rejection ✕"}
                 </button>
@@ -264,7 +329,6 @@ export default function App() {
             </div>
           </div>
         )}
-
       </main>
     </div>
   );
