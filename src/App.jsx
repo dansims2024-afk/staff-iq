@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 
 export default function App() {
   // --- 1. GLOBAL STATE & NAVIGATION ---
-  const [activeTab, setActiveTab] = useState('Dashboard');
+  const [activeTab, setActiveTab] = useState('Post a Job');
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [editingJob, setEditingJob] = useState(null); 
   const [showEmailPreview, setShowEmailPreview] = useState(false);
   const [showFeedGuide, setShowFeedGuide] = useState(false);
   
-  // Posting / Editor State
+  // Posting / Project Architect State
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -19,7 +19,7 @@ export default function App() {
   const [jobs, setJobs] = useState([
     { id: 101, title: "Senior Software Engineer", dept: "Engineering", location: "Remote", applicants: 42, status: "Active", description: "React and Node expert needed for high-growth team." },
     { id: 102, title: "Product Designer", dept: "Design", location: "New York", applicants: 18, status: "Active", description: "Lead our UI/UX initiatives from concept to launch." },
-    { id: 103, title: "Office Manager", dept: "Operations", location: "Austin", applicants: 0, status: "Draft", description: "Seeking a catalyst for operational excellence." }
+    { id: 103, title: "Staff Accountant", dept: "Finance", location: "Austin", applicants: 0, status: "Draft", description: "Seeking a catalyst for operational excellence." }
   ]);
 
   const candidates = [
@@ -37,31 +37,31 @@ export default function App() {
 
   // --- 3. CORE LOGIC FUNCTIONS ---
 
-  // Strategic JD Generator overhaul
-  const generateAI = () => {
+  // Overhauled Strategic JD Generator
+  const generateStrategicAI = () => {
     if (!title) return alert("Please enter a Job Title.");
     setIsGenerating(true);
     setTimeout(() => {
-      const proJD = `# ${title.toUpperCase()} MISSION\n\n## THE IMPACT\nWe are looking for a catalyst. As our ${title}, you will ensure that our high-velocity environment remains organized and scalable.\n\n## 90-DAY SUCCESS METRICS\n* **Optimization:** Improve 3 core administrative workflows.\n* **Execution:** Maintain a 100% accuracy rate on high-priority tasks.\n\n## THE ARCHETYPE\n* **High-Velocity Execution:** You anticipate needs before they arise.\n* **Strategic Mindset:** You solve problems at the root.`;
-      setDescription(proJD);
+      const eliteJD = `# ${title.toUpperCase()} MISSION\n\n## THE IMPACT\nWe are looking for a catalyst. As our ${title}, you will ensure that our high-velocity environment remains organized, efficient, and infinitely scalable.\n\n## 90-DAY SUCCESS METRICS\n* **Optimization:** Audit and improve at least 3 core workflows.\n* **Execution:** Maintain a 100% accuracy rate on mission-critical tasks.\n\n## THE ARCHETYPE\n* **High-Velocity Execution:** You anticipate needs before they arise.\n* **Strategic Mindset:** You solve problems at the root.`;
+      setDescription(eliteJD);
       setIsGenerating(false);
-    }, 1800);
+    }, 1500);
   };
 
   const saveJobEdits = () => {
     setJobs(jobs.map(j => j.id === editingJob.id ? editingJob : j));
     setEditingJob(null);
-    alert("Project blueprint updated.");
   };
 
   const handleFinalPublish = () => {
+    if (!description) return alert("Generate content before publishing.");
     setIsPublishing(true);
     setTimeout(() => {
-      const newJob = { id: Date.now(), title, dept: "General", location: "Remote", applicants: 0, status: "Active", description };
+      const newJob = { id: Date.now(), title, dept: "New Role", location: "Remote", applicants: 0, status: "Active", description };
       setJobs([newJob, ...jobs]);
       setIsPublishing(false);
       setIsPublished(true);
-    }, 1500);
+    }, 2000);
   };
 
   return (
@@ -82,7 +82,7 @@ export default function App() {
             <button 
               key={tab} 
               onClick={() => {setActiveTab(tab); setEditingJob(null); setIsPublished(false); setSelectedCandidate(null);}}
-              className={`text-left p-3 px-5 rounded-xl font-bold flex items-center gap-3 transition-all ${activeTab === tab ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-slate-400 hover:bg-slate-800'}`}
+              className={`text-left p-3 px-5 rounded-xl font-bold flex items-center gap-3 transition-all ${activeTab === tab ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:bg-slate-800'}`}
             >
               {tab}
             </button>
@@ -109,22 +109,9 @@ export default function App() {
                 <p className="text-4xl font-[900] italic text-indigo-600 leading-none mt-2">{jobs.length}</p>
               </div>
               <div className="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm">
-                <p className="text-slate-400 text-[10px] font-black uppercase mb-1 tracking-widest leading-none">Total Candidates</p>
-                <p className="text-4xl font-[900] italic text-emerald-500 leading-none mt-2">458</p>
+                <p className="text-slate-400 text-[10px] font-black uppercase mb-1 tracking-widest leading-none">Money Saved</p>
+                <p className="text-4xl font-[900] italic text-emerald-500 leading-none mt-2">$14.2k</p>
               </div>
-              <div className="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm">
-                <p className="text-slate-400 text-[10px] font-black uppercase mb-1 tracking-widest leading-none">Recruitment ROI</p>
-                <p className="text-4xl font-[900] italic text-amber-500 leading-none mt-2">$14.2k</p>
-              </div>
-            </div>
-            
-            <div className="bg-[#0F172A] p-10 rounded-[40px] text-white flex justify-between items-center relative overflow-hidden">
-                <div className="relative z-10">
-                    <h3 className="text-2xl font-[900] italic uppercase mb-2 tracking-tighter">Accelerate your hiring loop.</h3>
-                    <p className="text-slate-400 text-sm font-bold opacity-80">Use the AI Architect to build a high-performance JD in seconds.</p>
-                </div>
-                <button onClick={() => setActiveTab('Post a Job')} className="relative z-10 bg-indigo-600 px-8 py-4 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-indigo-500 shadow-xl transition-all">Start Project</button>
-                <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl"></div>
             </div>
           </div>
         )}
@@ -135,76 +122,78 @@ export default function App() {
             {!editingJob ? (
               <div className="space-y-4">
                 {jobs.map(j => (
-                  <div key={j.id} className="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm flex justify-between items-center hover:border-indigo-200 transition-all group">
+                  <div key={j.id} className="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm flex justify-between items-center group transition-all hover:border-indigo-200">
                     <div className="cursor-pointer" onClick={() => setEditingJob(j)}>
                       <h4 className="text-xl font-[900] italic uppercase leading-none mb-2 group-hover:text-indigo-600 transition-colors">{j.title}</h4>
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">{j.dept} • {j.location}</p>
                     </div>
-                    <div className="flex gap-4 items-center">
-                       <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg">{j.applicants} Applicants</span>
-                       <button onClick={() => setEditingJob(j)} className="px-6 py-2 bg-[#0F172A] text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-lg">Edit</button>
-                    </div>
+                    <button onClick={() => setEditingJob(j)} className="px-6 py-2 bg-[#0F172A] text-white rounded-xl text-[10px] font-black uppercase shadow-lg">Edit Project</button>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="bg-white p-10 rounded-[40px] shadow-xl border border-slate-100 animate-in slide-in-from-right-4 duration-300">
+              <div className="bg-white p-10 rounded-[40px] shadow-xl border border-slate-100 animate-in slide-in-from-right-4">
                  <div className="flex justify-between items-center mb-10">
-                    <h3 className="text-2xl font-[900] italic uppercase tracking-tighter">Project Blueprint: {editingJob.title}</h3>
-                    <button onClick={() => setEditingJob(null)} className="text-slate-400 font-black uppercase text-[10px] tracking-widest hover:text-rose-500 transition-colors">✕ Cancel Edits</button>
+                    <h3 className="text-2xl font-[900] italic uppercase tracking-tighter">Blueprint Editor</h3>
+                    <button onClick={() => setEditingJob(null)} className="text-slate-400 font-black uppercase text-[10px]">✕ Cancel</button>
                  </div>
                  <div className="space-y-6">
-                    <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Job Title</label>
-                        <input value={editingJob.title} onChange={(e) => setEditingJob({...editingJob, title: e.target.value})} className="w-full p-4 bg-slate-50 rounded-2xl border-none font-[900] italic text-lg uppercase outline-none focus:ring-2 focus:ring-indigo-500 transition-all" />
-                    </div>
-                    <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Live Content</label>
-                        <textarea value={editingJob.description} onChange={(e) => setEditingJob({...editingJob, description: e.target.value})} className="w-full h-80 p-8 bg-slate-50 rounded-[32px] border-none text-sm leading-relaxed outline-none focus:ring-2 focus:ring-indigo-500 transition-all" />
-                    </div>
-                    <button onClick={saveJobEdits} className="w-full py-5 bg-indigo-600 text-white rounded-2xl font-[900] italic uppercase tracking-tighter shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all">Update Live Project Info</button>
+                    <input value={editingJob.title} onChange={(e) => setEditingJob({...editingJob, title: e.target.value})} className="w-full p-4 bg-slate-50 rounded-2xl border-none font-[900] italic text-lg uppercase outline-none focus:ring-2 focus:ring-indigo-500" />
+                    <textarea value={editingJob.description} onChange={(e) => setEditingJob({...editingJob, description: e.target.value})} className="w-full h-80 p-8 bg-slate-50 rounded-[32px] border-none text-sm leading-relaxed" />
+                    <button onClick={saveJobEdits} className="w-full py-5 bg-indigo-600 text-white rounded-2xl font-[900] italic uppercase tracking-tighter shadow-xl">Update Project Info</button>
                  </div>
               </div>
             )}
           </div>
         )}
 
-        {/* 3. POST A JOB (STRATEGIC GENERATOR) */}
+        {/* 3. POST A JOB (REFINED WORKFLOW) */}
         {activeTab === 'Post a Job' && (
-          <div className="max-w-4xl space-y-6 animate-in slide-in-from-bottom-4 duration-500">
+          <div className="max-w-5xl space-y-8 animate-in slide-in-from-bottom-4">
             <div className="bg-white p-10 rounded-[40px] shadow-xl border border-slate-100">
-              <div className="mb-10">
-                <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full p-5 bg-slate-50 rounded-2xl border-none font-[900] italic text-3xl uppercase mb-8 outline-none focus:ring-2 focus:ring-indigo-500 transition-all shadow-inner" placeholder="ENTER JOB TITLE (E.G. OFFICE MANAGER)" />
-                <div className="grid grid-cols-2 gap-4">
-                    <button onClick={handleFinalPublish} disabled={isPublishing || isPublished} className={`py-6 rounded-2xl font-[900] italic uppercase text-sm tracking-widest shadow-xl transition-all ${isPublished ? 'bg-emerald-500 text-white' : 'bg-[#0F172A] text-white hover:scale-[1.02] active:scale-95'}`}>
-                        {isPublished ? "✓ LIVE ON GOOGLE JOBS" : isPublishing ? "INDEXING..." : "PUBLISH TO GOOGLE JOBS"}
-                    </button>
-                    <button onClick={() => setShowFeedGuide(true)} className="py-6 bg-white border-4 border-indigo-600 text-indigo-600 rounded-2xl font-[900] italic uppercase text-sm tracking-widest hover:bg-indigo-50 transition-all">
-                        XML FEED SYNC
-                    </button>
-                </div>
-              </div>
-
-              <div className="flex justify-between items-center mb-4 px-2">
+              <input 
+                value={title} 
+                onChange={(e) => setTitle(e.target.value)} 
+                className="w-full p-6 bg-slate-50 rounded-[24px] border-none font-[900] italic text-3xl uppercase mb-8 outline-none focus:ring-2 focus:ring-indigo-500 transition-all shadow-inner" 
+                placeholder="JOB TITLE (E.G. STAFF ACCOUNTANT)" 
+              />
+              
+              <div className="flex justify-between items-center px-2 mb-4">
                  <div className="flex items-center gap-2">
                     <span className="w-2 h-2 bg-indigo-600 rounded-full animate-pulse"></span>
                     <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest italic">Strategic Content Builder</span>
                  </div>
-                 <button onClick={generateAI} disabled={isGenerating} className="bg-indigo-600 text-white px-6 py-2 rounded-full font-[900] italic text-xs uppercase tracking-tighter hover:bg-indigo-700 transition-all shadow-lg">
+                 <button onClick={generateStrategicAI} disabled={isGenerating} className="bg-indigo-600 text-white px-8 py-3 rounded-full font-[900] italic text-xs uppercase tracking-tighter hover:bg-indigo-700">
                     {isGenerating ? "Consulting AI..." : "✨ Generate Strategic JD"}
                  </button>
               </div>
-              <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="w-full h-[400px] p-10 bg-slate-50 rounded-[40px] border-none text-sm leading-relaxed font-medium text-slate-700 shadow-inner outline-none focus:ring-2 focus:ring-indigo-100" placeholder="The AI will build your strategic blueprint here..." />
+
+              <textarea 
+                value={description} 
+                onChange={(e) => setDescription(e.target.value)} 
+                className="w-full h-[500px] p-12 bg-slate-50 rounded-[40px] border-none text-sm leading-relaxed font-medium text-slate-700 shadow-inner outline-none focus:ring-2 focus:ring-indigo-100 mb-10 transition-all" 
+                placeholder="The AI will architect your strategic mission here..." 
+              />
+
+              <div className="grid grid-cols-2 gap-6 border-t border-slate-100 pt-10">
+                  <button 
+                    onClick={handleFinalPublish} 
+                    disabled={isPublishing || isPublished} 
+                    className={`py-6 rounded-2xl font-[900] italic uppercase text-sm tracking-widest shadow-xl transition-all ${isPublished ? 'bg-emerald-500 text-white' : 'bg-[#0F172A] text-white hover:scale-[1.01]'}`}
+                  >
+                      {isPublished ? "✓ LIVE ON GOOGLE JOBS" : isPublishing ? "INDEXING ON GOOGLE..." : "PUBLISH TO GOOGLE JOBS"}
+                  </button>
+                  <button onClick={() => setShowFeedGuide(true)} className="py-6 bg-white border-4 border-indigo-600 text-indigo-600 rounded-2xl font-[900] italic uppercase text-sm tracking-widest hover:bg-indigo-50">
+                      XML FEED SYNC
+                  </button>
+              </div>
             </div>
 
             {showFeedGuide && (
-              <div className="bg-indigo-600 text-white p-10 rounded-[40px] shadow-2xl animate-in zoom-in-95 duration-300">
-                <h3 className="text-xl font-[900] italic uppercase mb-4 tracking-tighter">Universal Syndication Key</h3>
-                <p className="text-sm font-bold text-indigo-100 mb-6 leading-relaxed">Your distribution file is generated. Take your 'staff-iq-feed.xml' and upload it to the Indeed or Jooble employer center for 10x more reach automatically.</p>
-                <div className="flex gap-4">
-                    <button onClick={() => setShowFeedGuide(false)} className="px-6 py-3 bg-white text-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg">I've Uploaded It</button>
-                    <button onClick={() => setShowFeedGuide(false)} className="px-6 py-3 bg-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest">Dismiss</button>
-                </div>
+              <div className="bg-[#0F172A] text-white p-10 rounded-[40px] shadow-2xl animate-in zoom-in-95">
+                <h3 className="text-xl font-[900] italic uppercase mb-2 text-indigo-400">Universal Distribution Key</h3>
+                <p className="text-sm font-bold opacity-80 mb-6 leading-relaxed">Your XML file is ready. Upload this to <b>Indeed</b> or <b>Jooble</b> to sync your hiring projects across the web.</p>
+                <button onClick={() => setShowFeedGuide(false)} className="px-8 py-3 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest">Understood</button>
               </div>
             )}
           </div>
@@ -212,31 +201,27 @@ export default function App() {
 
         {/* 4. CANDIDATES (AI INTEL) */}
         {activeTab === 'Candidates' && (
-          <div className="bg-white rounded-[32px] shadow-sm border border-slate-100 overflow-hidden animate-in fade-in duration-500">
+          <div className="bg-white rounded-[32px] shadow-sm border border-slate-100 overflow-hidden animate-in fade-in">
             <table className="w-full text-left">
               <thead>
                 <tr className="bg-slate-50 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 italic">
                   <th className="p-8">Candidate Profile</th>
                   <th className="p-8 text-center">AI Fit Score</th>
-                  <th className="p-8">Referral Source</th>
                   <th className="p-8">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {candidates.map(c => (
-                  <tr key={c.id} className="hover:bg-slate-50 transition-colors group">
+                  <tr key={c.id} className="hover:bg-slate-50 transition-colors">
                     <td className="p-8">
-                        <p className="font-black text-lg group-hover:text-indigo-600 transition-colors">{c.name}</p>
+                        <p className="font-black text-lg">{c.name}</p>
                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mt-1">{c.role}</p>
                     </td>
                     <td className="p-8 text-center">
                         <span className="text-3xl font-[900] italic text-indigo-600 tracking-tighter leading-none">{c.score}</span>
                     </td>
                     <td className="p-8">
-                        <span className="px-3 py-1 bg-slate-100 text-slate-500 rounded-lg text-[9px] font-black uppercase tracking-widest">{c.source}</span>
-                    </td>
-                    <td className="p-8">
-                      <button onClick={() => setSelectedCandidate(c)} className="bg-indigo-600 text-white px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all">Evaluate Intel</button>
+                      <button onClick={() => setSelectedCandidate(c)} className="bg-indigo-600 text-white px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-100">Evaluate Intel</button>
                     </td>
                   </tr>
                 ))}
@@ -245,40 +230,23 @@ export default function App() {
           </div>
         )}
 
-        {/* 5. ANALYTICS (ROI CALCULATOR) */}
+        {/* 5. ANALYTICS */}
         {activeTab === 'Analytics' && (
-          <div className="grid grid-cols-2 gap-8 animate-in fade-in duration-500">
-              <div className="bg-white p-10 rounded-[40px] border border-slate-100 shadow-sm">
-                  <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-8 italic">Channel ROI Efficiency</h4>
-                  <div className="space-y-6">
-                      {['Google Jobs Index', 'XML Syndication Feed', 'Direct Referral'].map((s, i) => (
-                          <div key={s} className="space-y-2">
-                              <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-500 leading-none"><span>{s}</span><span>{95 - (i*12)}%</span></div>
-                              <div className="h-2 bg-slate-50 rounded-full overflow-hidden shadow-inner"><div className="h-full bg-indigo-500 transition-all duration-1000 ease-out shadow-sm" style={{width: `${95-(i*12)}%`}}></div></div>
-                          </div>
-                      ))}
-                  </div>
-              </div>
-              <div className="bg-indigo-600 p-10 rounded-[40px] shadow-2xl text-white relative overflow-hidden">
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-4 opacity-60 italic leading-none">Financial Impact Matrix</p>
-                  <p className="text-sm font-bold opacity-80 mb-10 leading-relaxed">By prioritizing high-leverage free syndication nodes, you have avoided significant premium ad spend this period.</p>
-                  <p className="text-7xl font-[900] italic tracking-tighter leading-none">$14,250</p>
-                  <p className="text-[10px] font-black uppercase mt-4 opacity-60 tracking-widest leading-none">Net Ad Spend Efficiency Savings</p>
-                  <div className="absolute -right-10 -top-10 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
-              </div>
+          <div className="bg-indigo-600 p-12 rounded-[40px] shadow-2xl text-white relative overflow-hidden animate-in fade-in">
+             <h4 className="text-[10px] font-black uppercase tracking-[0.2em] mb-4 opacity-60 italic">Elite Sourcing Impact</h4>
+             <p className="text-7xl font-[900] italic tracking-tighter leading-none">$14,250</p>
+             <p className="text-[10px] font-black uppercase mt-4 opacity-60">Net Ad Spend Efficiency Savings</p>
+             <div className="absolute -right-10 -top-10 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
           </div>
         )}
 
-        {/* MODAL: AI INTEL & AUTOMATED SCHEDULING */}
+        {/* MODAL: AI INTEL & SCHEDULING */}
         {selectedCandidate && (
           <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
             <div className="bg-white w-full max-w-lg rounded-[48px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
               <div className="bg-[#0F172A] p-10 text-white flex justify-between items-center">
-                <div>
-                    <h3 className="text-3xl font-[900] italic uppercase tracking-tighter leading-none mb-1">{selectedCandidate.name}</h3>
-                    <p className="text-indigo-400 text-[10px] font-black uppercase tracking-widest leading-none">Strategic AI Briefing</p>
-                </div>
-                <button onClick={() => {setSelectedCandidate(null); setShowEmailPreview(false);}} className="text-slate-500 hover:text-white text-3xl transition-colors">✕</button>
+                <h3 className="text-2xl font-[900] italic uppercase tracking-tighter">Candidate Intel</h3>
+                <button onClick={() => {setSelectedCandidate(null); setShowEmailPreview(false);}} className="text-slate-500 text-3xl">✕</button>
               </div>
               <div className="p-10">
                 {!showEmailPreview ? (
@@ -293,16 +261,12 @@ export default function App() {
                         ))}
                       </ul>
                     </div>
-                    <div className="flex gap-4">
-                        <button onClick={() => setShowEmailPreview(true)} className="flex-1 py-5 bg-indigo-600 text-white rounded-2xl font-[900] italic uppercase tracking-widest text-xs shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all">Schedule Loop</button>
-                        <button className="flex-1 py-5 bg-slate-50 text-slate-400 rounded-2xl font-black uppercase tracking-widest text-xs border border-slate-100">Reject</button>
-                    </div>
+                    <button onClick={() => setShowEmailPreview(true)} className="w-full py-5 bg-indigo-600 text-white rounded-2xl font-[900] italic uppercase tracking-widest text-xs shadow-xl">Schedule Loop</button>
                   </>
                 ) : (
                   <div className="animate-in slide-in-from-right-4">
-                     <div className="bg-slate-50 border border-slate-200 p-8 rounded-[32px] text-sm text-slate-600 leading-relaxed italic mb-8 shadow-inner relative">
-                        <span className="absolute -top-3 left-6 bg-[#0F172A] text-white text-[8px] px-2 py-1 rounded font-black uppercase tracking-widest">Branded Email Preview</span>
-                        Hi {selectedCandidate.name.split(' ')[0]}, Our AI has flagged your profile as a high-potential match for our <b>{selectedCandidate.role}</b> opening. We'd love to schedule a briefing call regarding next steps...
+                     <div className="bg-slate-50 border border-slate-200 p-8 rounded-[32px] text-sm text-slate-600 italic mb-8 shadow-inner">
+                        Hi {selectedCandidate.name.split(' ')[0]}, Our AI has flagged your profile as a potential match for <b>{selectedCandidate.role}</b>. We'd love to schedule a briefing call...
                      </div>
                      <button onClick={() => {alert('Automation Triggered!'); setSelectedCandidate(null); setShowEmailPreview(false);}} className="w-full py-5 bg-[#0F172A] text-white rounded-2xl font-[900] italic uppercase tracking-tighter shadow-xl hover:scale-[1.02] transition-all">Execute Automation 🚀</button>
                   </div>
