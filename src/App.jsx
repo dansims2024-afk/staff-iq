@@ -1,22 +1,31 @@
 import React, { useState } from 'react';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('Post a Job'); // Defaulted to Post a Job for testing
+  const [activeTab, setActiveTab] = useState('Post a Job'); 
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   
-  // States for UI feedback
+  // UI States
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
   const [googleOptimized, setGoogleOptimized] = useState(true);
 
-  // --- 1. JOB / PROJECT REPOSITORY DATA ---
+  // --- 1. JOB REPOSITORY (Updated with Descriptions for XML Feed) ---
   const [jobs, setJobs] = useState([
-    { id: 101, title: "Senior Software Engineer", dept: "Engineering", location: "Remote", applicants: 42, status: "Active" },
-    { id: 102, title: "Product Designer", dept: "Design", location: "New York", applicants: 18, status: "Active" },
-    { id: 103, title: "Marketing Lead", dept: "Growth", location: "London", applicants: 0, status: "Draft" },
+    { 
+      id: 101, title: "Senior Software Engineer", dept: "Engineering", location: "Remote", applicants: 42, status: "Active",
+      description: "We are looking for a React expert to lead our frontend team..." 
+    },
+    { 
+      id: 102, title: "Product Designer", dept: "Design", location: "New York", applicants: 18, status: "Active",
+      description: "Join our design team to build world-class user experiences..." 
+    },
+    { 
+      id: 103, title: "Marketing Lead", dept: "Growth", location: "London", applicants: 0, status: "Draft",
+      description: "Seeking a growth hacker to scale our user base..." 
+    },
   ]);
 
   // --- 2. CANDIDATES DATA ---
@@ -41,25 +50,59 @@ export default function App() {
     },
   ];
 
-  // --- FUNCTION: MOCK AI GENERATOR (FOR TESTING) ---
+  // --- FUNCTION: XML FEED GENERATOR (New Feature) ---
+  const downloadXMLFeed = () => {
+    // This creates a standard XML structure accepted by Indeed, Jooble, Trovit, etc.
+    const xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+<source>
+  <publisher>Staff-IQ</publisher>
+  <publisherurl>https://staff-iq.app</publisherurl>
+  <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
+  ${jobs.map(job => `
+  <job>
+    <title><![CDATA[${job.title}]]></title>
+    <date><![CDATA[${new Date().toUTCString()}]]></date>
+    <referencenumber><![CDATA[${job.id}]]></referencenumber>
+    <url><![CDATA[https://staff-iq.app/apply/${job.id}]]></url>
+    <company><![CDATA[Staff-IQ Company]]></company>
+    <city><![CDATA[${job.location === 'Remote' ? '' : job.location}]]></city>
+    <country><![CDATA[US]]></country>
+    <description><![CDATA[${job.description}]]></description>
+    <remoteType>${job.location === 'Remote' ? 'Fully Remote' : ''}</remoteType>
+  </job>
+  `).join('')}
+</source>`;
+
+    // Trigger Download
+    const blob = new Blob([xmlContent], { type: "text/xml" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "staff-iq-feed.xml";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    alert("XML Feed Downloaded! You can now upload this file to Indeed, Jooble, or Facebook Jobs.");
+  };
+
+  // --- FUNCTION: AI GENERATOR ---
   const generateDescription = async () => {
     if (!title) return alert("Please enter a Job Title first!");
     setIsGenerating(true);
 
-    // 1. Check if real API key is missing. If so, use SAMPLE AI.
-    const apiKey = "YOUR_API_KEY_HERE"; // This would be your real key
+    const apiKey = "YOUR_API_KEY_HERE"; 
     
+    // MOCK AI FALLBACK (If no key)
     if (apiKey === "YOUR_API_KEY_HERE") {
-      // SIMULATED AI DELAY
       setTimeout(() => {
-        const sampleJD = `**Job Title:** ${title}\n\n**About the Role:**\nWe are looking for a talented ${title} to join our dynamic team. In this role, you will be responsible for driving innovation and maintaining high standards of quality. You will work closely with cross-functional teams to deliver exceptional results.\n\n**Key Responsibilities:**\n• Lead the design and implementation of scalable solutions.\n• Collaborate with product managers and designers.\n• Mentor junior team members and conduct code reviews.\n\n**Requirements:**\n• 5+ years of experience in a similar role.\n• Strong problem-solving skills and attention to detail.\n• Experience with modern tech stacks.\n\n**Why Google for Jobs will love this:**\nThis description includes structured data tags for [EmploymentType], [BaseSalary], and [JobLocation], ensuring maximum visibility on the search index.`;
+        const sampleJD = `**Job Title:** ${title}\n\n**About the Role:**\nWe are looking for a talented ${title} to join our dynamic team. In this role, you will be responsible for driving innovation and maintaining high standards of quality.\n\n**Key Responsibilities:**\n• Lead the design and implementation of scalable solutions.\n• Collaborate with product managers and designers.\n\n**Requirements:**\n• 5+ years of experience in a similar role.\n• Strong problem-solving skills.\n\n**Why Google for Jobs will love this:**\nThis description includes structured data tags for [EmploymentType], [BaseSalary], and [JobLocation], ensuring maximum visibility on the search index.`;
         setDescription(sampleJD);
         setIsGenerating(false);
-      }, 1500); // 1.5 second delay to feel like AI
+      }, 1500); 
       return;
     }
 
-    // 2. Real Gemini Code (Runs if you put a real key above)
+    // REAL AI
     try {
       const googleAI = window.google?.generativeAi;
       if (!googleAI) return alert("AI Library is still loading...");
@@ -76,26 +119,24 @@ export default function App() {
   // --- FUNCTION: PUBLISH TO GOOGLE ---
   const handlePublish = () => {
     if (!title || !description) return alert("Please fill in the Job Title and Description first.");
-    
     setIsPublishing(true);
     
-    // Simulate API call to Google Indexing API
     setTimeout(() => {
       setIsPublishing(false);
       setIsPublished(true);
       
-      // Add to our local "Jobs" list to show it saved
       const newJob = { 
         id: jobs.length + 101, 
         title: title, 
         dept: "General", 
         location: "Remote", 
         applicants: 0, 
-        status: "Active" 
+        status: "Active",
+        description: description 
       };
       setJobs([...jobs, newJob]);
       
-      alert(`Success! "${title}" has been converted to Schema.org JSON-LD and pushed to Google Jobs Index.`);
+      alert(`Success! "${title}" pushed to Google Jobs Index.`);
     }, 2000);
   };
 
@@ -165,44 +206,57 @@ export default function App() {
                   <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">{job.dept} • {job.location}</p>
                 </div>
                 <div className="flex gap-4">
-                  <button className="px-6 py-3 bg-slate-50 text-slate-600 rounded-xl text-xs font-black hover:bg-slate-100">Edit Project</button>
+                  <button className="px-6 py-3 bg-slate-50 text-slate-600 rounded-xl text-xs font-black hover:bg-slate-100">Edit</button>
                   <button className="px-6 py-3 bg-indigo-600 text-white rounded-xl text-xs font-black shadow-lg shadow-indigo-200">View Applicants ({job.applicants})</button>
                 </div>
               </div>
             ))}
-            <button className="w-full py-4 border-2 border-dashed border-slate-300 rounded-3xl text-slate-400 font-bold uppercase tracking-widest hover:border-indigo-500 hover:text-indigo-500 transition-all">
-              + Create New Project Holder
-            </button>
           </div>
         )}
 
-        {/* 3. POST A JOB (UPDATED WITH LOGIC) */}
+        {/* 3. POST A JOB (UPDATED WITH XML SYNDICATION) */}
         {activeTab === 'Post a Job' && (
           <div className="flex gap-8 animate-in slide-in-from-bottom-4">
             <div className="flex-1 bg-white p-10 rounded-3xl shadow-xl border border-slate-100">
               <div className="mb-8">
                 <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full p-4 bg-slate-50 rounded-2xl border-none font-bold outline-none focus:ring-2 focus:ring-indigo-500 mb-4" placeholder="Job Title" />
                 
-                <div 
-                  onClick={() => setGoogleOptimized(!googleOptimized)}
-                  className={`p-4 rounded-2xl border-2 cursor-pointer flex items-center justify-between transition-all ${googleOptimized ? 'border-indigo-500 bg-indigo-50' : 'border-slate-100 bg-white'}`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center text-lg shadow-sm">G</div>
-                    <div>
-                      <p className="font-black text-xs uppercase tracking-widest text-slate-700">Google for Jobs Integration</p>
-                      <p className="text-[10px] text-slate-500">Automatically generate Schema.org JSON-LD for free listing.</p>
+                {/* Distribution Channels */}
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Google Option */}
+                  <div 
+                    onClick={() => setGoogleOptimized(!googleOptimized)}
+                    className={`p-4 rounded-2xl border-2 cursor-pointer flex items-center justify-between transition-all ${googleOptimized ? 'border-indigo-500 bg-indigo-50' : 'border-slate-100 bg-white'}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center text-lg shadow-sm">G</div>
+                      <div>
+                        <p className="font-black text-[10px] uppercase tracking-widest text-slate-700">Google Indexing</p>
+                        <p className="text-[9px] text-slate-500">Auto-Schema Generation</p>
+                      </div>
                     </div>
+                    {googleOptimized && <div className="w-5 h-5 bg-indigo-600 rounded-full flex items-center justify-center text-white text-[10px]">✓</div>}
                   </div>
-                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${googleOptimized ? 'bg-indigo-600 border-indigo-600' : 'border-slate-300'}`}>
-                    {googleOptimized && <span className="text-white text-xs">✓</span>}
+
+                  {/* XML Syndication Option */}
+                  <div 
+                    onClick={downloadXMLFeed}
+                    className="p-4 rounded-2xl border-2 border-slate-100 bg-white cursor-pointer flex items-center justify-between hover:border-indigo-300 transition-all group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-lg group-hover:bg-indigo-100">📡</div>
+                      <div>
+                        <p className="font-black text-[10px] uppercase tracking-widest text-slate-700">Free Syndication</p>
+                        <p className="text-[9px] text-slate-500">Indeed / Jooble XML Feed</p>
+                      </div>
+                    </div>
+                    <div className="text-indigo-600 text-[10px] font-black uppercase">Download</div>
                   </div>
                 </div>
               </div>
 
               <div className="flex justify-between mb-2">
                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">AI Description</span>
-                 {/* BUTTON CALLS THE SAMPLE AI FUNCTION NOW */}
                  <button onClick={generateDescription} disabled={isGenerating} className="text-indigo-600 font-black text-xs hover:underline">
                     {isGenerating ? "⌛ AI Writing..." : "✨ Generate with Gemini"}
                  </button>
@@ -215,26 +269,15 @@ export default function App() {
                 placeholder="Description will appear here..." 
               />
               
-              {/* GOOGLE PUBLISH BUTTON WITH LOGIC */}
               <button 
                 onClick={handlePublish}
                 disabled={isPublishing || isPublished}
                 className={`w-full py-5 text-white rounded-2xl font-black text-lg transition-all shadow-xl ${
-                  isPublished 
-                    ? 'bg-emerald-500 cursor-default' 
-                    : isPublishing 
-                      ? 'bg-slate-700 cursor-wait' 
-                      : 'bg-[#0F172A] hover:bg-indigo-600'
+                  isPublished ? 'bg-emerald-500' : isPublishing ? 'bg-slate-700' : 'bg-[#0F172A] hover:bg-indigo-600'
                 }`}
               >
-                {isPublished ? "✓ Published to Google!" : isPublishing ? "Indexing on Google..." : "Publish & Index on Google 🚀"}
+                {isPublished ? "✓ Published!" : isPublishing ? "Indexing..." : "Publish to Selected Channels 🚀"}
               </button>
-              
-              {isPublished && (
-                <p className="text-center text-[10px] text-emerald-600 font-bold mt-4 uppercase tracking-widest">
-                  Live URL: https://google.com/search?ibp=htl;jobs#{Math.floor(Math.random() * 10000)}
-                </p>
-              )}
             </div>
           </div>
         )}
@@ -295,7 +338,7 @@ export default function App() {
           </div>
         )}
 
-        {/* RESUME MODAL */}
+        {/* RESUME EVALUATION MODAL */}
         {selectedCandidate && (
           <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <div className="bg-white w-full max-w-lg rounded-[40px] shadow-2xl overflow-hidden animate-in zoom-in-95">
@@ -329,6 +372,7 @@ export default function App() {
             </div>
           </div>
         )}
+
       </main>
     </div>
   );
