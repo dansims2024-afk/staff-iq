@@ -1,34 +1,17 @@
 import React, { useState } from 'react';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('Dashboard');
+  // --- 1. GLOBAL STATE (Main Controller) ---
+  const [activeTab, setActiveTab] = useState('Candidates');
   const [selectedCandidate, setSelectedCandidate] = useState(null);
+  const [showEmailPreview, setShowEmailPreview] = useState(false);
+  const [calendlyLink, setCalendlyLink] = useState("https://calendly.com/staff-iq/technical-interview");
 
-  // --- 1. VELOCITY DATASET (Days in Stage) ---
-  const [candidates, setCandidates] = useState([
-    { 
-      id: 1, name: "Michael Vanhouten", score: "96%", status: "Final Loop", 
-      history: [
-        { stage: "Needs Review", days: 1 },
-        { stage: "Technical", days: 3 },
-        { stage: "Final Loop", days: 2 }
-      ]
-    },
-    { 
-      id: 2, name: "Sarah Jenkins", score: "91%", status: "Technical", 
-      history: [
-        { stage: "Needs Review", days: 2 },
-        { stage: "Technical", days: 4 }
-      ]
-    }
+  // --- 2. THE ATS DATASET ---
+  const [candidates] = useState([
+    { id: 1, name: "Michael Vanhouten", score: "96%", status: "Technical", calendlyStatus: "Pending Booking" },
+    { id: 2, name: "Sarah Jenkins", score: "91%", status: "Needs Review", calendlyStatus: "Not Sent" }
   ]);
-
-  // --- 2. CALCULATE AGGREGATE VELOCITY ---
-  const avgVelocity = {
-    "Needs Review": 1.5,
-    "Technical": 3.5,
-    "Final Loop": 2.0
-  };
 
   return (
     <div className="flex min-h-screen font-sans bg-[#0B0F1A] text-white">
@@ -47,56 +30,63 @@ export default function App() {
       </nav>
 
       <main className="flex-1 ml-72 p-12">
-        <header className="mb-12"><h2 className="text-4xl font-[900] italic uppercase tracking-tighter leading-none">{activeTab}</h2></header>
+        <header className="mb-12 flex justify-between items-start">
+            <div>
+                <h2 className="text-4xl font-[900] italic uppercase tracking-tighter leading-none mb-2">{activeTab}</h2>
+                <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest italic">Scheduling Synchronization Active</p>
+            </div>
+            {/* CALENDLY SETTINGS WIDGET */}
+            <div className="bg-[#111827] border border-slate-800 p-4 rounded-2xl flex items-center gap-4">
+               <div className="text-right">
+                  <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest">Active Link</p>
+                  <p className="text-[10px] font-bold text-indigo-400">Calendly.com/Staff-IQ</p>
+               </div>
+               <button onClick={() => alert("Link Settings Open")} className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-xs hover:bg-indigo-600 transition-all">⚙</button>
+            </div>
+        </header>
 
-        {/* DASHBOARD: VELOCITY WIDGET */}
-        {activeTab === 'Dashboard' && (
-          <div className="grid grid-cols-12 gap-10 animate-in fade-in">
-             <div className="col-span-8 bg-[#111827] border border-slate-800 p-10 rounded-[40px]">
-                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 italic mb-10 leading-none">Pipeline Velocity (Avg Days per Stage)</h3>
-                <div className="flex justify-between items-end h-48 px-10">
-                   {Object.entries(avgVelocity).map(([stage, days]) => (
-                     <div key={stage} className="flex flex-col items-center gap-4 w-1/4">
-                        <div className="w-full bg-slate-900 rounded-2xl relative overflow-hidden h-32 flex flex-col justify-end">
-                           <div className="bg-indigo-500 w-full transition-all duration-1000" style={{ height: `${(days / 5) * 100}%` }}></div>
-                        </div>
-                        <p className="text-[10px] font-black uppercase text-slate-500 italic text-center">{stage}</p>
-                        <p className="text-xl font-black italic text-white leading-none">{days}d</p>
-                     </div>
-                   ))}
-                </div>
-             </div>
-
-             <div className="col-span-4 bg-[#111827] border border-slate-800 p-10 rounded-[40px] flex flex-col justify-center">
-                <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-2 italic">Velocity Insight</p>
-                <p className="text-sm font-bold text-slate-400 leading-relaxed uppercase italic">Technical screening is your current bottleneck, averaging 3.5 days. Consider enabling <span className="text-white">Auto-Loop</span> to reduce friction.</p>
-             </div>
+        {/* CANDIDATES: SCHEDULING STATUS */}
+        {activeTab === 'Candidates' && (
+          <div className="space-y-6 animate-in fade-in">
+             {candidates.map((c) => (
+               <div key={c.id} className="bg-[#111827] border border-slate-800 p-8 rounded-[40px] flex justify-between items-center group hover:border-indigo-500 transition-all">
+                  <div className="flex items-center gap-8">
+                    <div className="w-16 h-16 bg-slate-900 rounded-2xl flex items-center justify-center text-2xl font-[900] italic text-indigo-400">{c.score.replace('%', '')}</div>
+                    <div>
+                        <p className="font-black text-2xl uppercase italic text-white mb-1 leading-none">{c.name}</p>
+                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Status: <span className="text-indigo-400">{c.calendlyStatus}</span></p>
+                    </div>
+                  </div>
+                  <button onClick={() => {setSelectedCandidate(c); setShowEmailPreview(true);}} className="px-8 py-3 bg-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-widest text-white shadow-lg">Send Scheduling Loop</button>
+               </div>
+             ))}
           </div>
         )}
 
-        {/* CANDIDATES: INDIVIDUAL VELOCITY */}
-        {activeTab === 'Candidates' && (
-          <div className="space-y-6">
-             {candidates.map((c) => (
-               <div key={c.id} className="bg-[#111827] border border-slate-800 p-8 rounded-[40px] flex justify-between items-center group hover:border-indigo-500 transition-all">
-                  <div>
-                    <p className="font-black text-2xl uppercase italic text-white mb-1 leading-none">{c.name}</p>
-                    <div className="flex gap-4 items-center mt-4">
-                       {c.history.map((h, i) => (
-                         <div key={i} className="flex items-center gap-2">
-                            <span className="text-[9px] font-black text-slate-600 uppercase italic leading-none">{h.stage}:</span>
-                            <span className="text-[10px] font-black text-indigo-400 leading-none">{h.days}d</span>
-                            {i < c.history.length - 1 && <span className="text-slate-800">→</span>}
-                         </div>
-                       ))}
-                    </div>
-                  </div>
-                  <div className="text-right">
-                     <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1 italic">Total Cycle</p>
-                     <p className="text-3xl font-[900] italic text-white leading-none">{c.history.reduce((acc, h) => acc + h.days, 0)}d</p>
-                  </div>
-               </div>
-             ))}
+        {/* CALENDLY-POWERED EMAIL PREVIEW */}
+        {showEmailPreview && (
+          <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-[100] flex items-center justify-center p-8">
+             <div className="bg-white text-slate-900 w-full max-w-xl rounded-[48px] overflow-hidden shadow-2xl animate-in slide-in-from-bottom-8">
+                <div className="bg-[#111827] p-8 text-white flex justify-between items-center">
+                   <h3 className="font-black uppercase italic text-sm">Automated Loop Preview</h3>
+                   <button onClick={() => setShowEmailPreview(false)} className="opacity-50 hover:opacity-100 font-black">✕</button>
+                </div>
+                <div className="p-12 space-y-8">
+                   <p className="text-xl font-bold leading-tight italic uppercase">Congratulations, {selectedCandidate?.name.split(' ')[0]}!</p>
+                   <p className="text-slate-500 font-medium leading-relaxed">Our AI team has reviewed your background and wants to move directly to a technical interview. Please use the button below to book a time on our calendar.</p>
+                   
+                   {/* DYNAMIC CALENDLY BUTTON */}
+                   <div className="p-8 bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl text-center">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Preview of Booking Link</p>
+                      <button className="w-full py-5 bg-indigo-600 text-white rounded-[20px] font-[900] italic uppercase tracking-widest shadow-xl">
+                         Schedule Technical Interview
+                      </button>
+                      <p className="mt-4 text-[9px] font-bold text-slate-400 italic">{calendlyLink}</p>
+                   </div>
+
+                   <button onClick={() => {setShowEmailPreview(false); alert("Loop Dispatched.");}} className="w-full py-4 bg-[#111827] text-white rounded-2xl font-black uppercase text-xs">Dispatch to Candidate</button>
+                </div>
+             </div>
           </div>
         )}
       </main>
