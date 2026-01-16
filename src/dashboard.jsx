@@ -1,43 +1,48 @@
 import React, { useState } from 'react';
 
-// --- SIQ MASTER NODE: LIVE SIMULATION ---
 export default function App() {
+  // --- GLOBAL STATE ---
   const [activeTab, setActiveTab] = useState('Dashboard');
   const [selectedCandidate, setSelectedCandidate] = useState(null);
-  const [resumeViewMode, setResumeViewMode] = useState('split'); // 'split' or 'full'
 
-  // --- 1. SINGLE TARGET JOB ---
-  const jobStats = {
-    title: "Staff Accountant",
-    location: "Princeton, NJ",
-    applicants: 10,
-    interviews: 4,
-    health: 92,
-    clicks: 342,
-    savings: "$4,200"
-  };
+  // --- 1. THE JOB (SINGLE ACTIVE REQUISITION) ---
+  const [jobs] = useState([
+    { 
+      id: 1, 
+      title: "STAFF ACCOUNTANT", 
+      location: "Princeton, NJ", 
+      dept: "Finance", 
+      salary: "$65k - $80k",
+      type: "Full-Time",
+      applicants: 10, 
+      clicks: 342, 
+      health: 92,
+      status: "Active",
+      posted: "2 days ago"
+    }
+  ]);
 
   // --- 2. THE 10 CANDIDATES (MIXED SOURCES) ---
   const [candidates] = useState([
     { 
       id: 1, name: "Michael Vanhouten", role: "Staff Accountant", score: "96%", status: "Final Loop", 
-      source: "Employee Referral", sourceColor: "text-amber-400", time: "2d ago",
-      aiSummary: "Perfect match for the Princeton role. Deep experience with NetSuite and GAAP compliance. Strong cultural fit.",
+      source: "Employee Referral", sourceColor: "text-amber-400", time: "2d ago", location: "Princeton, NJ",
+      aiSummary: "Perfect match. Deep experience with NetSuite and GAAP compliance. Local candidate.",
       pros: ["5yrs Local CPA Firm exp", "NetSuite Certified", "Lives in Princeton"],
-      cons: ["High salary expectation"],
+      cons: ["High salary expectation ($85k)"],
       resume: `MICHAEL VANHOUTEN\nPrinceton, NJ • (609) 555-0102\n\nSUMMARY\nDedicated Staff Accountant with 5+ years of experience managing general ledgers, month-end closures, and financial reporting for mid-sized firms in the tri-state area.\n\nEXPERIENCE\n\nSenior Accountant | Mercer Capital, Trenton, NJ\n2020 – Present\n• Managed full-cycle accounting for 3 subsidiaries.\n• Reduced month-end close time by 20% via automation.\n• Spearheaded the migration to NetSuite ERP.\n\nJunior Accountant | Princeton H&R, Princeton, NJ\n2018 – 2020\n• Assisted with tax preparation for 200+ clients.\n• Reconciled bank statements for 15 accounts monthly.\n\nEDUCATION\nB.S. Accounting, Rutgers University`
     },
     { 
       id: 2, name: "Sarah Jenkins", role: "Junior Accountant", score: "91%", status: "Technical", 
-      source: "LinkedIn", sourceColor: "text-blue-400", time: "5h ago",
+      source: "LinkedIn", sourceColor: "text-blue-400", time: "5h ago", location: "Lawrenceville, NJ",
       aiSummary: "Strong technical skills but slightly junior. Excellent Excel proficiency demonstrated in screening.",
       pros: ["Advanced Excel (Macros/VBA)", "QuickBooks Pro", "Immediate Availability"],
       cons: ["Only 2 years experience"],
-      resume: `SARAH JENKINS\nLawrenceville, NJ • sarah.j@email.com\n\nSKILLS\nAdvanced Excel (VBA, Macros), QuickBooks, SAP, GAAP Standards.\n\nEXPERIENCE\n\nBookkeeper | Main St. Bakery, Lawrenceville, NJ\n2021 – Present\n• Handled all AP/AR for high-volume retail location.\n• Processed bi-weekly payroll for 25 employees.\n\nIntern | Deloitte, Philadelphia, PA\nSummer 2020\n• Assisted audit team with inventory verification.\n\nEDUCATION\nB.A. Finance, Rider University`
+      resume: `SARAH JENKINS\nLawrenceville, NJ\n\nSKILLS\nAdvanced Excel (VBA, Macros), QuickBooks, SAP, GAAP Standards.\n\nEXPERIENCE\n\nBookkeeper | Main St. Bakery, Lawrenceville, NJ\n2021 – Present\n• Handled all AP/AR for high-volume retail location.\n• Processed bi-weekly payroll for 25 employees.\n\nIntern | Deloitte, Philadelphia, PA\nSummer 2020\n• Assisted audit team with inventory verification.\n\nEDUCATION\nB.A. Finance, Rider University`
     },
     { 
       id: 3, name: "David Ross", role: "Financial Analyst", score: "88%", status: "Screening", 
-      source: "Indeed", sourceColor: "text-indigo-400", time: "1d ago",
+      source: "Indeed", sourceColor: "text-indigo-400", time: "1d ago", location: "New Brunswick, NJ",
       aiSummary: "Overqualified for Staff Accountant, but strong potential for growth. Currently a Financial Analyst.",
       pros: ["FP&A Experience", "Strong Modeling"],
       cons: ["Flight risk (might find work boring)", "Remote preference"],
@@ -45,7 +50,7 @@ export default function App() {
     },
     { 
       id: 4, name: "Emily Chen", role: "AP Specialist", score: "74%", status: "Needs Review", 
-      source: "Manual Upload", sourceColor: "text-slate-400", time: "30m ago",
+      source: "Manual Upload", sourceColor: "text-slate-400", time: "30m ago", location: "West Windsor, NJ",
       aiSummary: "Specialized in Accounts Payable. Lacks general ledger exposure needed for this role.",
       pros: ["High volume AP processing", "Vendor relations"],
       cons: ["Lack of GL experience", "No CPA track"],
@@ -53,7 +58,7 @@ export default function App() {
     },
     { 
       id: 5, name: "James Peterson", role: "Accountant", score: "82%", status: "Sourced", 
-      source: "ZipRecruiter", sourceColor: "text-emerald-400", time: "3h ago",
+      source: "ZipRecruiter", sourceColor: "text-emerald-400", time: "3h ago", location: "Plainsboro, NJ",
       aiSummary: "Solid background but has job-hopped frequently. Validate tenure in phone screen.",
       pros: ["Diverse industry experience", "Tech savvy"],
       cons: ["4 jobs in 5 years", "Gap in employment"],
@@ -61,15 +66,15 @@ export default function App() {
     },
     { 
       id: 6, name: "Linda Gomez", role: "Bookkeeper", score: "65%", status: "Rejected", 
-      source: "Indeed", sourceColor: "text-indigo-400", time: "4d ago",
+      source: "Indeed", sourceColor: "text-indigo-400", time: "4d ago", location: "Hamilton, NJ",
       aiSummary: "Skillset does not match requirements. Primarily bookkeeping for small trades, no corporate accounting.",
       pros: ["Organized", "Loyal (10yrs at last job)"],
       cons: ["No ERP experience", "No Bachelor's degree"],
       resume: `LINDA GOMEZ\nHamilton, NJ\n\nEXPERIENCE\n\nOffice Manager/Bookkeeper | Joe's Plumbing\n2013 – 2023\n• Managed all office finances, invoices, and payroll using QuickBooks Desktop.\n\nEDUCATION\nHigh School Diploma`
     },
     { 
-      id: 7, name: "Raj Patel", role: "Staff Accountant", score: "93%", status: "Needs Review", 
-      source: "Manual Upload", sourceColor: "text-slate-400", time: "1h ago",
+      id: 7, name: "Raj Patel", role: "Staff Auditor", score: "93%", status: "Needs Review", 
+      source: "Manual Upload", sourceColor: "text-slate-400", time: "1h ago", location: "Edison, NJ",
       aiSummary: "Strong candidate sourced from agency database. CPA eligible and 3 years experience.",
       pros: ["CPA Eligible", "Public Accounting Exp"],
       cons: ["Requires H1B sponsorship transfer"],
@@ -77,7 +82,7 @@ export default function App() {
     },
     { 
       id: 8, name: "Marcus Thorne", role: "Controller", score: "55%", status: "Rejected", 
-      source: "LinkedIn", sourceColor: "text-blue-400", time: "6h ago",
+      source: "LinkedIn", sourceColor: "text-blue-400", time: "6h ago", location: "Princeton, NJ",
       aiSummary: "Overqualified. Currently a Controller looking to step down, which presents a retention risk.",
       pros: ["Extremely experienced"],
       cons: ["Salary likely too high", "Flight risk"],
@@ -85,7 +90,7 @@ export default function App() {
     },
     { 
       id: 9, name: "Anita Roy", role: "Grad Student", score: "78%", status: "Sourced", 
-      source: "Jooble", sourceColor: "text-rose-400", time: "12h ago",
+      source: "Jooble", sourceColor: "text-rose-400", time: "12h ago", location: "Princeton Jct, NJ",
       aiSummary: "Recent grad with high GPA but zero work experience. Good for entry level, maybe not 'Staff' level.",
       pros: ["3.9 GPA", "Fast learner"],
       cons: ["No practical experience"],
@@ -93,7 +98,7 @@ export default function App() {
     },
     { 
       id: 10, name: "Tom Baines", role: "Tax Associate", score: "80%", status: "Screening", 
-      source: "Employee Referral", sourceColor: "text-amber-400", time: "3d ago",
+      source: "Employee Referral", sourceColor: "text-amber-400", time: "3d ago", location: "Ewing, NJ",
       aiSummary: "Referred by Ops Director. Strong tax background, wants to pivot to General Ledger.",
       pros: ["Internal referral", "Tax expertise"],
       cons: ["Learning curve for GL"],
@@ -111,13 +116,13 @@ export default function App() {
            <p className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.2em] mt-2 leading-none italic">Elite Sourcing Engine</p>
         </div>
         <div className="flex flex-col gap-2 flex-1">
-          {['Dashboard', 'Candidates', 'Jobs', 'Post a Job'].map((tab) => (
+          {['Dashboard', 'Jobs', 'Post a Job', 'Candidates'].map((tab) => (
             <button key={tab} onClick={() => setActiveTab(tab)} className={`text-left p-4 px-6 rounded-2xl font-black uppercase text-xs tracking-widest transition-all ${activeTab === tab ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-500/20' : 'text-slate-500 hover:bg-slate-800'}`}>{tab}</button>
           ))}
         </div>
         <div className="mt-auto pt-8 border-t border-slate-800 flex items-center gap-3">
           <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-          <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Live Node: Princeton</span>
+          <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Node: Princeton_NJ</span>
         </div>
       </nav>
 
@@ -126,29 +131,34 @@ export default function App() {
         <header className="flex justify-between items-start mb-12">
           <div>
             <h2 className="text-4xl font-[900] italic uppercase tracking-tighter leading-none mb-2">{activeTab}</h2>
-            <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest italic">Target: Staff Accountant (Ref #1042)</p>
+            <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest italic">Target: Staff Accountant (Princeton, NJ)</p>
           </div>
           <div className="bg-[#111827] p-2 rounded-xl border border-slate-800 shadow-lg">
              <img src="/logo.png" alt="Logo" className="w-10 h-10 object-contain" />
           </div>
         </header>
 
-        {/* DASHBOARD: REAL-TIME ANALYTICS FOR THIS JOB */}
+        {/* DASHBOARD: REAL-TIME ANALYTICS FOR THIS 1 JOB */}
         {activeTab === 'Dashboard' && (
           <div className="space-y-10 animate-in fade-in duration-500">
             {/* KPI STRIP */}
             <div className="grid grid-cols-4 gap-6">
-              {[
-                { label: 'Total Candidates', val: '10', color: 'text-white' },
-                { label: 'Avg Match Score', val: '81%', color: 'text-indigo-400' },
-                { label: 'Sourcing Savings', val: '$4.2k', color: 'text-emerald-400' },
-                { label: 'Interviewing', val: '4', color: 'text-amber-400' }
-              ].map((s, i) => (
-                <div key={i} className="bg-[#111827] border border-slate-800 p-8 rounded-[32px]">
-                  <p className="text-slate-500 text-[10px] font-black uppercase mb-1 italic">{s.label}</p>
-                  <p className={`text-4xl font-[900] italic ${s.color} leading-none`}>{s.val}</p>
-                </div>
-              ))}
+              <div className="bg-[#111827] border border-slate-800 p-8 rounded-[32px]">
+                  <p className="text-slate-500 text-[10px] font-black uppercase mb-1 italic">Active Roles</p>
+                  <p className="text-4xl font-[900] italic text-indigo-400 leading-none">1</p>
+              </div>
+              <div className="bg-[#111827] border border-slate-800 p-8 rounded-[32px]">
+                  <p className="text-slate-500 text-[10px] font-black uppercase mb-1 italic">Total Candidates</p>
+                  <p className="text-4xl font-[900] italic text-white leading-none">10</p>
+              </div>
+              <div className="bg-[#111827] border border-slate-800 p-8 rounded-[32px]">
+                  <p className="text-slate-500 text-[10px] font-black uppercase mb-1 italic">Sourcing ROI</p>
+                  <p className="text-4xl font-[900] italic text-emerald-400 leading-none">$4.2k</p>
+              </div>
+              <div className="bg-[#111827] border border-slate-800 p-8 rounded-[32px]">
+                  <p className="text-slate-500 text-[10px] font-black uppercase mb-1 italic">Avg Match</p>
+                  <p className="text-4xl font-[900] italic text-amber-400 leading-none">81%</p>
+              </div>
             </div>
 
             <div className="grid grid-cols-12 gap-10">
@@ -185,6 +195,31 @@ export default function App() {
           </div>
         )}
 
+        {/* JOBS TAB: SHOWING THE 1 ACTIVE JOB */}
+        {activeTab === 'Jobs' && (
+          <div className="space-y-6 animate-in fade-in">
+             <div className="bg-[#111827] border border-slate-800 p-8 rounded-[40px] group hover:border-indigo-500 transition-all">
+                <div className="flex justify-between items-start mb-6">
+                   <div className="flex gap-3">
+                      <span className="px-3 py-1 bg-slate-800 rounded-lg text-[10px] font-black uppercase tracking-widest text-slate-500">{jobs[0].dept}</span>
+                      <span className="px-3 py-1 bg-slate-800 rounded-lg text-[10px] font-black uppercase tracking-widest text-slate-500">{jobs[0].location}</span>
+                   </div>
+                   <span className="text-[10px] font-black uppercase text-emerald-500">Pipeline: Healthy (92%)</span>
+                </div>
+                <div className="flex justify-between items-end">
+                   <div>
+                      <h4 className="text-3xl font-[900] italic uppercase leading-none mb-2 text-white">{jobs[0].title}</h4>
+                      <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{jobs[0].applicants} Candidates • {jobs[0].clicks} Viral Clicks • Posted {jobs[0].posted}</p>
+                   </div>
+                   <div className="flex gap-4">
+                      <button onClick={() => setActiveTab('Candidates')} className="px-6 py-3 bg-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-indigo-500/20">Manage Candidates</button>
+                      <button className="px-6 py-3 bg-slate-800 rounded-xl text-[10px] font-black uppercase tracking-widest text-white">XML Link</button>
+                   </div>
+                </div>
+             </div>
+          </div>
+        )}
+
         {/* CANDIDATES LIST */}
         {activeTab === 'Candidates' && (
           <div className="space-y-6 animate-in fade-in">
@@ -201,7 +236,7 @@ export default function App() {
                   <div className="flex-1 grid grid-cols-3 gap-4 items-center">
                      <div>
                         <p className="font-black text-xl uppercase italic leading-none mb-1 text-white">{c.name}</p>
-                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{c.role} • {c.location || 'Princeton, NJ'}</p>
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{c.role} • {c.location}</p>
                      </div>
                      <div>
                         <p className="text-[9px] font-black text-slate-600 uppercase tracking-widest mb-1">Source</p>
@@ -218,6 +253,16 @@ export default function App() {
                </div>
              ))}
           </div>
+        )}
+
+        {/* POST A JOB (EMPTY STATE FOR DEMO) */}
+        {activeTab === 'Post a Job' && (
+           <div className="flex items-center justify-center h-[60vh] text-slate-600">
+              <div className="text-center">
+                 <p className="text-6xl font-[900] italic mb-4 opacity-20">SIQ</p>
+                 <p className="text-[10px] font-black uppercase tracking-widest">Ready for New Requisition</p>
+              </div>
+           </div>
         )}
 
         {/* CANDIDATE DETAIL MODAL (SPLIT VIEW) */}
