@@ -1,47 +1,47 @@
 import React, { useState } from 'react';
 
 export default function App() {
-  // --- 1. GLOBAL STATE (Main Controller) ---
+  // --- 1. GLOBAL STATE ---
   const [activeTab, setActiveTab] = useState('Dashboard');
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [activeJobView, setActiveJobView] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [copyStatus, setCopyStatus] = useState("Copy XML Link");
 
-  // --- 2. ENHANCED PRODUCTION DATASET ---
+  // --- 2. THE DATASET ---
   const [jobs] = useState([
     { 
       id: 1, title: "Staff Accountant", location: "Princeton, NJ", dept: "Finance", health: 92,
-      jd: "MISSION: STAFF ACCOUNTANT\n\nTHE IMPACT\nJoin Staff-IQ in our Princeton hub. You will manage full-cycle accounting, ensuring that our high-velocity financial environment remains 100% accurate and infinitely scalable.\n\n90-DAY SUCCESS METRICS\n• Audit and improve 3 core month-end workflows.\n• Complete migration of legacy ledger to NetSuite ERP.",
+      xmlUrl: "https://staff-iq.com/feeds/princeton-acc-1042.xml",
+      jd: "MISSION: STAFF ACCOUNTANT\n\nTHE IMPACT\nJoin Staff-IQ in our Princeton hub. You will manage full-cycle accounting...",
       candidates: [
-        { 
-          id: 1, name: "Michael Vanhouten", score: "96%", status: "Final Loop", source: "Referral", 
-          aiSummary: "Elite match. Deep experience with NetSuite and GAAP compliance. Princeton local with public accounting background.", 
-          resume: "MICHAEL VANHOUTEN\nPrinceton, NJ\n\nEXPERIENCE\nSenior Accountant | Mercer Capital (2020-Present)\n• Managed $50M in annual assets.\n• Led NetSuite ERP implementation.\n\nJunior Accountant | Princeton H&R (2018-2020)\n• Handled 200+ tax clients annually." 
-        },
-        { 
-          id: 2, name: "Sarah Jenkins", score: "91%", status: "Technical", source: "LinkedIn", 
-          aiSummary: "Strong technical skills, particularly in Excel automation. Highly organized but requires NetSuite training.", 
-          resume: "SARAH JENKINS\nLawrenceville, NJ\n\nEXPERIENCE\nBookkeeper | Main St. Bakery (2021-Present)\n• Automated payroll for 30 employees using VBA.\n• Managed all AP/AR functions." 
-        }
+        { id: 1, name: "Michael Vanhouten", score: "96%", status: "Final Loop", source: "Referral", aiSummary: "Elite match. NetSuite expert.", resume: "MICHAEL VANHOUTEN..." }
       ]
     },
     { 
       id: 2, title: "Office Manager", location: "East Windsor, NJ", dept: "Operations", health: 85,
-      jd: "MISSION: OFFICE MANAGER\n\nTHE IMPACT\nAs the operational anchor for our East Windsor site, you will optimize workspace efficiency and maintain essential infrastructure with precision.\n\n90-DAY SUCCESS METRICS\n• Reduce facility vendor spend by 15%.\n• Implement a new digital inventory system for mission-critical supplies.",
+      xmlUrl: "https://staff-iq.com/feeds/ew-ops-2091.xml",
+      jd: "MISSION: OFFICE MANAGER\n\nTHE IMPACT\nAs the operational anchor for our East Windsor site...",
       candidates: [
-        { id: 15, name: "Julie Vance", score: "96%", status: "Needs Review", source: "Manual", aiSummary: "Hospitality veteran with elite organizational skills. Local to East Windsor.", resume: "JULIE VANCE\nEast Windsor, NJ\n\nEXPERIENCE\nFront Office Manager | Marriott (2019-Present)\n• Managed staff of 15 and facility operations.\n• Improved guest satisfaction scores by 20%." }
+        { id: 15, name: "Julie Vance", score: "96%", status: "Needs Review", source: "Manual", aiSummary: "Hospitality veteran.", resume: "JULIE VANCE..." }
       ]
     }
   ]);
 
-  // --- 3. JD GENERATOR LOGIC ---
+  // --- 3. CORE LOGIC ---
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text);
+    setCopyStatus("Copied! ✓");
+    setTimeout(() => setCopyStatus("Copy XML Link"), 2000);
+  };
+
   const generateJD = () => {
     if (!title) return alert("System requires a Job Title.");
     setIsGenerating(true);
     setTimeout(() => {
-      setDescription(`MISSION: ${title.toUpperCase()}\n\nTHE IMPACT\nJoin the Staff-IQ mission. As our ${title}, you will ensure that our high-velocity environment remains organized and scalable.\n\n90-DAY SUCCESS METRICS\n• Process Optimization: Audit at least 3 core workflows.\n• Execution: Maintain 100% accuracy on mission-critical projects.`);
+      setDescription(`MISSION: ${title.toUpperCase()}\n\nTHE IMPACT\nJoin the Staff-IQ mission...`);
       setIsGenerating(false);
     }, 1500);
   };
@@ -53,7 +53,7 @@ export default function App() {
       <nav className="w-72 p-8 fixed h-full flex flex-col bg-[#111827] border-r border-slate-800 shadow-2xl z-30">
         <div className="mb-12 flex items-center gap-3">
            <img src="/logo.png" alt="Staff-IQ Logo" className="w-10 h-10 object-contain" />
-           <h1 className="text-2xl font-[900] italic uppercase tracking-tighter text-white leading-none">Staff-IQ</h1>
+           <h1 className="text-2xl font-[900] italic uppercase tracking-tighter text-white">Staff-IQ</h1>
         </div>
         <div className="flex flex-col gap-2 flex-1">
           {['Dashboard', 'Jobs', 'Post a Job'].map((tab) => (
@@ -68,26 +68,19 @@ export default function App() {
             {activeJobView && <button onClick={() => setActiveJobView(null)} className="mt-4 text-[10px] font-black uppercase text-indigo-400">← Back to All Jobs</button>}
         </header>
 
-        {/* DASHBOARD: WITH INFO BUTTONS */}
+        {/* DASHBOARD */}
         {activeTab === 'Dashboard' && (
           <div className="grid grid-cols-4 gap-6 animate-in fade-in">
              {[
-                { label: 'Net Savings', val: '$22.5k', color: 'text-emerald-400', info: "Savings calculated by subtracting Staff-IQ's flat fee from the market-average Cost-Per-Hire ($4,200) for these roles." },
+                { label: 'Net Savings', val: '$22.5k', color: 'text-emerald-400', info: "Savings calculated by market-average Cost-Per-Hire ($4,200)." },
                 { label: 'Sourcing ROI', val: '412%', color: 'text-indigo-400', info: "Return on investment based on viral reach vs. paid ad spend." },
-                { label: 'Avg Match', val: '84%', color: 'text-amber-400', info: "The average AI Fit Score across all 15 active candidates." },
-                { label: 'Velocity', val: '6 Days', color: 'text-white', info: "Average time taken to move a candidate from Sourced to Final Loop." }
+                { label: 'Avg Match', val: '84%', color: 'text-amber-400', info: "Average AI Fit Score across 15 candidates." },
+                { label: 'Velocity', val: '6 Days', color: 'text-white', info: "Average time from Sourced to Final Loop." }
               ].map((s, i) => (
                 <div key={i} className="bg-[#111827] border border-slate-800 p-8 rounded-[32px] group relative">
-                  <div className="flex justify-between items-start mb-2">
-                    <p className="text-slate-500 text-[10px] font-black uppercase italic leading-none">{s.label}</p>
-                    <div className="w-4 h-4 rounded-full border border-slate-700 flex items-center justify-center text-[8px] font-black text-slate-500 hover:border-indigo-400 hover:text-indigo-400 cursor-help transition-all">i</div>
-                  </div>
+                  <div className="flex justify-between items-start mb-2"><p className="text-slate-500 text-[10px] font-black uppercase italic leading-none">{s.label}</p><div className="w-4 h-4 rounded-full border border-slate-700 flex items-center justify-center text-[8px] font-black text-slate-500 cursor-help transition-all">i</div></div>
                   <p className={`text-4xl font-[900] italic ${s.color} leading-none`}>{s.val}</p>
-                  {/* TOOLTIP */}
-                  <div className="absolute top-0 left-0 w-full p-6 bg-indigo-600 rounded-[32px] opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-10 shadow-2xl">
-                    <p className="text-[10px] font-black uppercase mb-1 italic">Intelligence Insight</p>
-                    <p className="text-[11px] font-bold leading-relaxed">{s.info}</p>
-                  </div>
+                  <div className="absolute top-0 left-0 w-full p-6 bg-indigo-600 rounded-[32px] opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-10 shadow-2xl"><p className="text-[10px] font-black uppercase mb-1 italic">Intelligence Insight</p><p className="text-[11px] font-bold leading-relaxed">{s.info}</p></div>
                 </div>
               ))}
           </div>
@@ -108,7 +101,7 @@ export default function App() {
           </div>
         )}
 
-        {/* CANDIDATE PIPELINE & JD VIEW */}
+        {/* PIPELINE & SYNDICATION DRILL-DOWN */}
         {activeJobView && (
           <div className="grid grid-cols-12 gap-10 animate-in slide-in-from-bottom-4">
              <div className="col-span-7 space-y-4">
@@ -119,10 +112,39 @@ export default function App() {
                  </div>
                ))}
              </div>
-             {/* JOB DESCRIPTION CARD */}
-             <div className="col-span-5 bg-[#111827] border border-slate-800 p-10 rounded-[40px] h-fit">
-                <h3 className="text-xs font-black uppercase text-slate-500 mb-6 italic">Active Requisition</h3>
-                <pre className="whitespace-pre-wrap font-bold text-slate-400 text-[11px] leading-relaxed italic">{activeJobView.jd}</pre>
+             
+             {/* REQUISITION INTEL & ACTIONS */}
+             <div className="col-span-5 space-y-6">
+                <div className="bg-[#111827] border border-slate-800 p-10 rounded-[40px] h-fit">
+                   <h3 className="text-xs font-black uppercase text-slate-500 mb-6 italic">Active Requisition</h3>
+                   <pre className="whitespace-pre-wrap font-bold text-slate-400 text-[11px] leading-relaxed italic mb-8">{activeJobView.jd}</pre>
+                   
+                   <div className="space-y-3 pt-6 border-t border-slate-800">
+                      {/* PUBLISH BUTTON */}
+                      <div className="relative group/btn w-full">
+                        <button className="w-full py-4 bg-emerald-600 rounded-xl text-[10px] font-black uppercase text-white shadow-lg flex items-center justify-center gap-3">
+                           Broadcast Requisition 🚀
+                           <div className="w-4 h-4 rounded-full border border-emerald-400/50 flex items-center justify-center text-[8px]">i</div>
+                        </button>
+                        <div className="absolute bottom-full left-0 mb-4 w-full p-6 bg-emerald-700 rounded-3xl opacity-0 group-hover/btn:opacity-100 transition-all pointer-events-none z-50">
+                           <p className="text-[10px] font-black uppercase mb-1">Distribution Intel</p>
+                           <p className="text-[11px] font-bold leading-relaxed">This pushes your job to Google for Jobs SEO indexing and internal talent networks instantly.</p>
+                        </div>
+                      </div>
+
+                      {/* XML COPY BUTTON */}
+                      <div className="relative group/btn w-full">
+                        <button onClick={() => copyToClipboard(activeJobView.xmlUrl)} className="w-full py-4 bg-slate-800 rounded-xl text-[10px] font-black uppercase text-white shadow-lg flex items-center justify-center gap-3 hover:bg-indigo-600 transition-all">
+                           {copyStatus}
+                           <div className="w-4 h-4 rounded-full border border-slate-600 flex items-center justify-center text-[8px]">i</div>
+                        </button>
+                        <div className="absolute bottom-full left-0 mb-4 w-full p-6 bg-indigo-600 rounded-3xl opacity-0 group-hover/btn:opacity-100 transition-all pointer-events-none z-50 shadow-2xl">
+                           <p className="text-[10px] font-black uppercase mb-1">Digital Umbilical Cord</p>
+                           <p className="text-[11px] font-bold leading-relaxed">Paste this link into Indeed or LinkedIn 'Feed Settings' to sync your requisition data automatically.</p>
+                        </div>
+                      </div>
+                   </div>
+                </div>
              </div>
           </div>
         )}
@@ -143,17 +165,17 @@ export default function App() {
         {/* CANDIDATE DETAIL MODAL */}
         {selectedCandidate && (
            <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-[100] flex items-center justify-center p-8">
-              <div className="bg-[#0B0F1A] border border-slate-700 w-full max-w-6xl h-[85vh] rounded-[48px] flex overflow-hidden shadow-2xl animate-in zoom-in-95">
+              <div className="bg-[#0B0F1A] border border-slate-700 w-full max-w-6xl h-[85vh] rounded-[48px] flex overflow-hidden shadow-2xl">
                  <div className="w-1/3 bg-[#111827] p-10 border-r border-slate-800 overflow-y-auto">
-                    <button onClick={() => setSelectedCandidate(null)} className="mb-6 text-[10px] font-black uppercase text-slate-500 leading-none">← Back to Pipeline</button>
+                    <button onClick={() => setSelectedCandidate(null)} className="mb-6 text-[10px] font-black uppercase text-slate-500 leading-none">← Back</button>
                     <h2 className="text-3xl font-[900] italic uppercase leading-none mb-8">{selectedCandidate.name}</h2>
                     <div className="p-6 bg-slate-800 rounded-2xl border border-slate-700 mb-6">
-                       <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-2 italic leading-none">AI Redline Summary</p>
+                       <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-2 italic">AI Redline Summary</p>
                        <p className="text-sm text-slate-300 font-medium leading-relaxed">{selectedCandidate.aiSummary}</p>
                     </div>
                     <button className="w-full py-5 bg-indigo-600 rounded-xl text-[10px] font-black uppercase text-white shadow-xl shadow-indigo-500/20">Schedule Interview</button>
                  </div>
-                 <div className="w-2/3 bg-white text-slate-900 p-12 overflow-y-auto rounded-r-[48px]"><pre className="whitespace-pre-wrap font-serif text-sm leading-relaxed">{selectedCandidate.resume}</pre></div>
+                 <div className="w-2/3 bg-white text-slate-900 p-12 overflow-y-auto"><pre className="whitespace-pre-wrap font-serif text-sm leading-relaxed">{selectedCandidate.resume}</pre></div>
               </div>
            </div>
         )}
