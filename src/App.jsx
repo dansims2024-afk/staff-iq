@@ -1,25 +1,33 @@
 import React, { useState } from 'react';
 
 export default function App() {
-  // --- 1. GLOBAL STATE ---
-  const [activeTab, setActiveTab] = useState('Jobs');
-  const [copyStatus, setCopyStatus] = useState("Copy XML Link");
-  const [showSyncGuide, setShowSyncGuide] = useState(false);
+  const [activeTab, setActiveTab] = useState('Dashboard');
+  const [selectedCandidate, setSelectedCandidate] = useState(null);
 
-  // --- 2. SAMPLE DATA ---
-  const [jobs] = useState([{ 
-    id: 1, title: "Staff Accountant", location: "Princeton, NJ", 
-    xmlUrl: "https://staff-iq.com/feeds/princeton-acc-1042.xml",
-    lastCrawl: "14 mins ago",
-    crawlSource: "Indeed Bot"
-  }]);
+  // --- 1. VELOCITY DATASET (Days in Stage) ---
+  const [candidates, setCandidates] = useState([
+    { 
+      id: 1, name: "Michael Vanhouten", score: "96%", status: "Final Loop", 
+      history: [
+        { stage: "Needs Review", days: 1 },
+        { stage: "Technical", days: 3 },
+        { stage: "Final Loop", days: 2 }
+      ]
+    },
+    { 
+      id: 2, name: "Sarah Jenkins", score: "91%", status: "Technical", 
+      history: [
+        { stage: "Needs Review", days: 2 },
+        { stage: "Technical", days: 4 }
+      ]
+    }
+  ]);
 
-  // --- 3. CORE LOGIC ---
-  const copyAndGuide = (text) => {
-    navigator.clipboard.writeText(text);
-    setCopyStatus("Copied! ✓");
-    setShowSyncGuide(true); // TRIGGER THE WIZARD
-    setTimeout(() => setCopyStatus("Copy XML Link"), 3000);
+  // --- 2. CALCULATE AGGREGATE VELOCITY ---
+  const avgVelocity = {
+    "Needs Review": 1.5,
+    "Technical": 3.5,
+    "Final Loop": 2.0
   };
 
   return (
@@ -29,11 +37,11 @@ export default function App() {
       <nav className="w-72 p-8 fixed h-full flex flex-col bg-[#111827] border-r border-slate-800 shadow-2xl z-30">
         <div className="mb-12 flex items-center gap-3">
            <img src="/logo.png" alt="Logo" className="w-10 h-10 object-contain" />
-           <h1 className="text-2xl font-[900] italic uppercase tracking-tighter text-white leading-none">Staff-IQ</h1>
+           <h1 className="text-2xl font-[900] italic uppercase tracking-tighter text-white">Staff-IQ</h1>
         </div>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 flex-1">
           {['Dashboard', 'Jobs', 'Candidates', 'Post a Job'].map((tab) => (
-            <button key={tab} onClick={() => setActiveTab(tab)} className={`text-left p-4 px-6 rounded-2xl font-black uppercase text-xs tracking-widest transition-all ${activeTab === tab ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-500/20' : 'text-slate-500 hover:bg-slate-800'}`}>{tab}</button>
+            <button key={tab} onClick={() => setActiveTab(tab)} className={`text-left p-4 px-6 rounded-2xl font-black uppercase text-xs tracking-widest transition-all ${activeTab === tab ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-500/20' : 'text-slate-400 hover:bg-slate-800'}`}>{tab}</button>
           ))}
         </div>
       </nav>
@@ -41,52 +49,54 @@ export default function App() {
       <main className="flex-1 ml-72 p-12">
         <header className="mb-12"><h2 className="text-4xl font-[900] italic uppercase tracking-tighter leading-none">{activeTab}</h2></header>
 
-        {/* JOBS TAB */}
-        {activeTab === 'Jobs' && (
-          <div className="space-y-6 animate-in fade-in">
-             {jobs.map(j => (
-               <div key={j.id} className="bg-[#111827] border border-slate-800 p-10 rounded-[40px] flex justify-between items-end hover:border-indigo-500 transition-all">
-                  <div>
-                    <h4 className="text-3xl font-[900] italic uppercase leading-none mb-4 text-white">{j.title}</h4>
-                    <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">Live Sync Active: {j.lastCrawl}</p>
-                  </div>
-                  <button onClick={() => copyAndGuide(j.xmlUrl)} className="px-8 py-3 bg-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-widest text-white shadow-lg">{copyStatus}</button>
-               </div>
-             ))}
+        {/* DASHBOARD: VELOCITY WIDGET */}
+        {activeTab === 'Dashboard' && (
+          <div className="grid grid-cols-12 gap-10 animate-in fade-in">
+             <div className="col-span-8 bg-[#111827] border border-slate-800 p-10 rounded-[40px]">
+                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 italic mb-10 leading-none">Pipeline Velocity (Avg Days per Stage)</h3>
+                <div className="flex justify-between items-end h-48 px-10">
+                   {Object.entries(avgVelocity).map(([stage, days]) => (
+                     <div key={stage} className="flex flex-col items-center gap-4 w-1/4">
+                        <div className="w-full bg-slate-900 rounded-2xl relative overflow-hidden h-32 flex flex-col justify-end">
+                           <div className="bg-indigo-500 w-full transition-all duration-1000" style={{ height: `${(days / 5) * 100}%` }}></div>
+                        </div>
+                        <p className="text-[10px] font-black uppercase text-slate-500 italic text-center">{stage}</p>
+                        <p className="text-xl font-black italic text-white leading-none">{days}d</p>
+                     </div>
+                   ))}
+                </div>
+             </div>
+
+             <div className="col-span-4 bg-[#111827] border border-slate-800 p-10 rounded-[40px] flex flex-col justify-center">
+                <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-2 italic">Velocity Insight</p>
+                <p className="text-sm font-bold text-slate-400 leading-relaxed uppercase italic">Technical screening is your current bottleneck, averaging 3.5 days. Consider enabling <span className="text-white">Auto-Loop</span> to reduce friction.</p>
+             </div>
           </div>
         )}
 
-        {/* SYNC GUIDE MODAL */}
-        {showSyncGuide && (
-          <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-[100] flex items-center justify-center p-8">
-             <div className="bg-[#111827] border border-slate-700 w-full max-w-2xl rounded-[48px] overflow-hidden shadow-2xl animate-in zoom-in-95">
-                <div className="p-12 space-y-8">
-                   <div className="flex justify-between items-start">
-                      <div className="bg-indigo-500/10 text-indigo-400 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest">Digital Umbilical Cord: Ready</div>
-                      <button onClick={() => setShowSyncGuide(false)} className="text-slate-500 hover:text-white font-black">✕</button>
-                   </div>
-                   
-                   <h3 className="text-3xl font-[900] italic uppercase leading-none">Where to Paste Your Link</h3>
-                   
-                   <div className="space-y-6">
-                      {[
-                        { board: "Indeed", step: "Go to 'Employer Home' > 'Job Sources' > Paste XML URL." },
-                        { board: "Jooble", step: "Login to Partner Panel > 'Feed Settings' > Paste XML URL." },
-                        { board: "LinkedIn", step: "Use 'Job Slot' settings or 'XML Feed' partner portal." }
-                      ].map((item, i) => (
-                        <div key={i} className="flex gap-6 p-6 bg-slate-900/50 rounded-3xl border border-slate-800">
-                           <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-[10px] font-black italic">{i+1}</div>
-                           <div>
-                              <p className="text-[10px] font-black uppercase text-indigo-400 mb-1">{item.board}</p>
-                              <p className="text-sm font-bold text-slate-400 leading-relaxed">{item.step}</p>
-                           </div>
-                        </div>
-                      ))}
-                   </div>
-
-                   <button onClick={() => setShowSyncGuide(false)} className="w-full py-6 bg-white text-black rounded-[24px] font-[900] italic uppercase tracking-widest hover:scale-[1.02] transition-all">Got it, Let's Go Viral</button>
-                </div>
-             </div>
+        {/* CANDIDATES: INDIVIDUAL VELOCITY */}
+        {activeTab === 'Candidates' && (
+          <div className="space-y-6">
+             {candidates.map((c) => (
+               <div key={c.id} className="bg-[#111827] border border-slate-800 p-8 rounded-[40px] flex justify-between items-center group hover:border-indigo-500 transition-all">
+                  <div>
+                    <p className="font-black text-2xl uppercase italic text-white mb-1 leading-none">{c.name}</p>
+                    <div className="flex gap-4 items-center mt-4">
+                       {c.history.map((h, i) => (
+                         <div key={i} className="flex items-center gap-2">
+                            <span className="text-[9px] font-black text-slate-600 uppercase italic leading-none">{h.stage}:</span>
+                            <span className="text-[10px] font-black text-indigo-400 leading-none">{h.days}d</span>
+                            {i < c.history.length - 1 && <span className="text-slate-800">→</span>}
+                         </div>
+                       ))}
+                    </div>
+                  </div>
+                  <div className="text-right">
+                     <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1 italic">Total Cycle</p>
+                     <p className="text-3xl font-[900] italic text-white leading-none">{c.history.reduce((acc, h) => acc + h.days, 0)}d</p>
+                  </div>
+               </div>
+             ))}
           </div>
         )}
       </main>
